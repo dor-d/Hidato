@@ -12,13 +12,13 @@ class HidatoCSP(CSP):
         self.grid = grid
         self._update()
 
-    def getVariables(self):
+    def get_variables(self):
         return list(range(1, self.size + 1))
 
-    def getDomain(self, x):
+    def get_domain(self, x):
         return self.domain
 
-    def getConstraints(self, x):
+    def get_constraint(self, x):
         if x in self.assigned_variables:
             return {self._2d_index(x)}
 
@@ -40,6 +40,9 @@ class HidatoCSP(CSP):
             raise ValueError()
 
         x, y = self._2d_index(variable)
+        return self._neighbors_of_index(x, y)
+
+    def _neighbors_of_index(self, x, y):
         return {(x + i, y + j)
                 for i in range(-1, 2)
                 for j in range(-1, 2)
@@ -79,3 +82,13 @@ class HidatoCSP(CSP):
 
     def _update_assigned_variables(self):
         self.assigned_variables = {x for x in self.grid if x != EMPTY}
+
+    def is_assigned(self, x):
+        return x in self.assigned_variables
+
+    def is_complete(self):
+        return len(self.assigned_variables) == len(self.get_variables())
+
+    def empty_neighbors(self, x, y):
+        return self._neighbors_of_index(x, y) & self.domain
+
