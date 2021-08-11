@@ -1,5 +1,7 @@
-import CSP
+import functools
 
+import CSP
+from functools import partial
 
 class SolverCSP:
 
@@ -11,7 +13,8 @@ class SolverCSP:
             return problem
 
         x = self._minimum_remaining_values(problem)
-        for value in sorted(problem.get_constraints(x), key=self.num_constraints, reverse=True):
+        problem_num_constraints = partial(self.num_constraints, problem=problem)
+        for value in sorted(problem.get_constraints(x), key=problem_num_constraints, reverse=True):
             problem.assign(x, value)
             result = self._recursive_backtracing(problem)
             if result is not None:

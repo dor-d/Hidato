@@ -7,7 +7,7 @@ def main():
 
     width = height = 5
     gen = HidatoGenerator()
-    hidato = gen.generateHidato(width, height)
+    hidato = gen.generateHidato(width, height, alpha=0.5)
     print("Before solve:")
     hidato.display()
 

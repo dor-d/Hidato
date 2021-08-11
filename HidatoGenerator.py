@@ -5,9 +5,9 @@ from HidatoCSP import *
 
 class HidatoGenerator:
 
-    def generateHidato(self, width, height):
+    def generateHidato(self, width, height, alpha=0.5):
         grid = self.generate_puzzle(width, height)
-        grid = self.omit_from_grid(width * height, grid, alpha=0.2)
+        grid = self.omit_from_grid(width * height, grid, alpha=alpha)
         return HidatoCSP(width, height, grid)
 
     def generate_puzzle(self, width, height):
