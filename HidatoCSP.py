@@ -49,9 +49,12 @@ class HidatoCSP(CSP):
                 if self._in_grid(x + i, y + j)
                 }
 
+    def _1d_to_2d_index(self, index):
+        return index // self.width, index % self.width
+
     def _2d_index(self, variable):
         i = self.grid.index(variable)
-        return i // self.width, i % self.width
+        return self._1d_to_2d_index(i)
 
     def _1d_index(self, i, j):
         return i * self.width + j
@@ -78,7 +81,7 @@ class HidatoCSP(CSP):
         self._update_assigned_variables()
 
     def _update_domain(self):
-        self.domain = {self._2d_index(i) for i in range(self.size) if self.grid[i] == EMPTY}
+        self.domain = {self._1d_to_2d_index(i) for i in range(self.size) if self.grid[i] == EMPTY}
 
     def _update_assigned_variables(self):
         self.assigned_variables = {x for x in self.grid if x != EMPTY}
@@ -91,4 +94,17 @@ class HidatoCSP(CSP):
 
     def empty_neighbors(self, x, y):
         return self._neighbors_of_index(x, y) & self.domain
+
+    def display(self):
+        for y in range(self.height):
+            print((''.join(['+'] + ['--+' for _ in range(self.width)])))
+            row = ['|']
+            for x in range(self.width):
+                i = y * self.width + x
+                if self.grid[i] == -1:
+                    row.append('* |')
+                else:
+                    row.append('%2d|' % self.grid[i])
+            print((''.join(row)))
+        print((''.join(['+'] + ['--+' for _ in range(self.width)])))
 

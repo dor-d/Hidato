@@ -1,5 +1,49 @@
 import anneal
 import random
+from HidatoCSP import *
+
+class HidatoGenerator:
+
+    def generateHidato(self, width, height):
+        grid = self.generate_puzzle(width, height)
+        grid = self.omit_from_grid(width * height, grid, alpha=0.2)
+        return HidatoCSP(width, height, grid)
+
+    def generate_puzzle(self, width, height):
+        def energy(state):
+            return state.energy()
+
+        def do_move(state):
+            return state.do_move()
+
+        def undo_move(state, undo_data):
+            state.undo_move(undo_data)
+
+        def make_copy(state):
+            result = Model(state.width, state.height, False)
+            result.end = state.end
+            result.next = list(state.next)
+            return result
+
+        e = True
+        while e:
+            state = Model(width, height)
+            annealer = anneal.Annealer(energy, do_move, undo_move, make_copy)
+            state, e = annealer.anneal(state, width * height, 0.1, 100000)
+        return state.get_grid()
+
+    def omit_from_grid(self, size, grid, alpha=0.5):
+        numbers = [i for i in range(size)]
+        to_remove = self.choices(numbers, k=int(alpha * size))
+        for i in numbers:
+            if i in to_remove:
+                grid[i] = EMPTY
+        return grid
+
+    def choices(self, population, k=1):
+        random.shuffle(population)
+        return population[:k]
+
 
 
 def compute_neighbors(width, height):
@@ -76,30 +120,6 @@ class Model(object):
         return result
 
 
-def generate_puzzle(width, height):
-    def energy(state):
-        return state.energy()
-
-    def do_move(state):
-        return state.do_move()
-
-    def undo_move(state, undo_data):
-        state.undo_move(undo_data)
-
-    def make_copy(state):
-        result = Model(state.width, state.height, False)
-        result.end = state.end
-        result.next = list(state.next)
-        return result
-
-    e = True
-    while e:
-        state = Model(width, height)
-        annealer = anneal.Annealer(energy, do_move, undo_move, make_copy)
-        state, e = annealer.anneal(state, width * height, 0.1, 100000)
-    # if e:
-    #     raise Exception('Failed to generate a valid puzzle.')
-    return state.get_grid()
 
 
 def display(width, height, grid):
@@ -116,25 +136,13 @@ def display(width, height, grid):
     print((''.join(['+'] + ['--+' for _ in range(width)])))
 
 
-def omit_from_grid(size, grid, alpha=0.5):
-    numbers = [i for i in range(size)]
-    to_remove = choices(numbers, k=int(alpha * size))
-    for i in numbers:
-        if i in to_remove:
-            grid[i] = -1
-    return grid
-
-
-def choices(population, k=1):
-    random.shuffle(population)
-    return population[:k]
 
 
 def main():
     width = height = 5
-    grid = generate_puzzle(width, height)
-    grid = omit_from_grid(width * height, grid, alpha=0.5)
-    display(width, height, grid)
+    gen = HidatoGenerator()
+    hidato = gen.generateHidato(width, height)
+    hidato.display()
 
 
 if __name__ == '__main__':
