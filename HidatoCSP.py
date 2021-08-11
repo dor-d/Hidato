@@ -89,8 +89,24 @@ class HidatoCSP(CSP):
     def is_assigned(self, x):
         return x in self.assigned_variables
 
+    def is_correct(self):
+        return self.is_complete() and self.is_consistent()
+
     def is_complete(self):
         return len(self.assigned_variables) == len(self.get_variables())
+
+    def is_consistent(self):
+        index = self.grid.index(1)
+        x_before = index // self.width
+        y_before = index % self.width
+        for i in range(2, self.width * self.height + 1):
+            index = self.grid.index(i)
+            x, y = index // self.width, index % self.width
+            if abs(x_before - x) > 1 or abs(y_before - y) > 1:
+                return False
+            x_before = x
+            y_before = y
+        return True
 
     def empty_neighbors(self, x, y):
         return self._neighbors_of_index(x, y) & self.domain
