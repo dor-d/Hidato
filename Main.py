@@ -5,43 +5,36 @@ from HidatoCSP import *
 from SolverCSP import *
 
 
-def is_consistent(width, height, grid):
-    val = grid.index(1)
-    x_before = val // width
-    y_before = val % width
-    flag = True
-    for i in range(2, width * height + 1):
-        val = grid.index(i)
-        x, y = val // width, val % width
+def is_consistent(hidato):
+    index = hidato.grid.index(1)
+    x_before = index // hidato.width
+    y_before = index % hidato.width
+    for i in range(2, hidato.width * hidato.height + 1):
+        index = hidato.grid.index(i)
+        x, y = index // hidato.width, index % hidato.width
         if abs(x_before - x) > 1 or abs(y_before - y) > 1:
-            flag = False
-            break
-        else:
-            if flag:
-                x_before = x
-                y_before = y
-    return flag
+            return False
+        x_before = x
+        y_before = y
+    return True
 
 
 DIM = 15
 
 
 def timeit(func):
-    def timed_func():
+    def timed_func(*args, **kwargs):
         start = time.time()
-        func()
+        func(*args, *kwargs)
         end = time.time() - start
         print(f'Running {func.__name__} took ' + '{0:.4g}'.format(end) + ' seconds.')
     return timed_func
 
-
-# def solve_hidato
-
 @timeit
-def main():
-    random.seed(0)
+def solve_hidato(width, height):
 
-    width = height = 5
+    print(f'Solving a {width} x {height} Hidato...\n')
+
     gen = HidatoGenerator()
     hidato = gen.generateHidato(width, height, alpha=0.5)
     print("Before solve:")
@@ -51,6 +44,16 @@ def main():
     solver.solve(hidato)
     print("\nAfter solve:")
     hidato.display()
+
+    correct = is_consistent(hidato)
+    print(f"Solution is {'correct' if correct else 'incorrect'}.")
+
+
+
+def main():
+    random.seed(0)
+    width = height = 5
+    solve_hidato(width, height)
 
 
 if __name__ == '__main__':
