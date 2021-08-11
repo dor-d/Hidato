@@ -60,7 +60,7 @@ class HidatoCSP(CSP):
         return i * self.width + j
 
     def _in_grid(self, x, y):
-        return x >= 0 and x < self.width and y >= 0 and y < self.height
+        return 0 <= x < self.width and 0 <= y < self.height
 
     def assign(self, x, value):
         index = self._1d_index(*value)
@@ -107,4 +107,3 @@ class HidatoCSP(CSP):
                     row.append('%2d|' % self.grid[i])
             print((''.join(row)))
         print((''.join(['+'] + ['--+' for _ in range(self.width)])))
-
