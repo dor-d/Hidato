@@ -1,7 +1,24 @@
+import time
+
 from HidatoGenerator import *
 from HidatoCSP import *
 from SolverCSP import *
 
+DIM = 15
+
+
+def timeit(func):
+    def timed_func():
+        start = time.time()
+        func()
+        end = time.time() - start
+        print(f'Running {func.__name__} took ' + '{0:.4g}'.format(end) + ' seconds.')
+    return timed_func
+
+
+# def solve_hidato
+
+@timeit
 def main():
     random.seed(0)
 
