@@ -18,7 +18,7 @@ class HidatoCSP(CSP):
     def get_domain(self, x):
         return self.domain
 
-    def get_constraint(self, x):
+    def get_constraints(self, x):
         if x in self.assigned_variables:
             return {self._2d_index(x)}
 
@@ -60,7 +60,7 @@ class HidatoCSP(CSP):
         return i * self.width + j
 
     def _in_grid(self, x, y):
-        return x < 0 or x > self.width or y < 0 or y > self.height
+        return x >= 0 and x < self.width and y >= 0 and y < self.height
 
     def assign(self, x, value):
         index = self._1d_index(*value)

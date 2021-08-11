@@ -6,7 +6,7 @@ class CSP:
     def get_domain(self, variable):
         pass
 
-    def get_constraint(self, variable):
+    def get_constraints(self, variable):
         pass
 
     def assign(self, variable, value):

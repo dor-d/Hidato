@@ -2,6 +2,7 @@ import anneal
 import random
 from HidatoCSP import *
 
+
 class HidatoGenerator:
 
     def generateHidato(self, width, height):
@@ -43,7 +44,6 @@ class HidatoGenerator:
     def choices(self, population, k=1):
         random.shuffle(population)
         return population[:k]
-
 
 
 def compute_neighbors(width, height):
@@ -120,8 +120,6 @@ class Model(object):
         return result
 
 
-
-
 def display(width, height, grid):
     for y in range(height):
         print((''.join(['+'] + ['--+' for _ in range(width)])))
@@ -134,8 +132,6 @@ def display(width, height, grid):
                 row.append('%2d|' % grid[i])
         print((''.join(row)))
     print((''.join(['+'] + ['--+' for _ in range(width)])))
-
-
 
 
 def main():
