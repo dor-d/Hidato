@@ -10,13 +10,32 @@ class HidatoCSP(CSP):
         self.height = height
         self.size = len(grid)
         self.grid = grid
+        self.domains = {}
         self._update()
 
     def get_variables(self):
         return list(range(1, self.size + 1))
 
+    def initialize_domain(self):
+        default_domain = [self._1d_to_2d_index(i) for i in range(self.size) if self.grid[i] == EMPTY]
+        for x in self.get_variables():
+            if x in self.assigned_variables:
+                self.domains[x] = [self._2d_index(x)]
+            else:
+                self.domains[x] = default_domain.copy()
+
+
     def get_domain(self, x):
-        return self.domain
+        return self.domains[x]
+
+    def get_constraints_2(self, x, y):
+        if (abs(y - x) != 1):
+            return lambda a, b: True
+
+        def constraint(a,b):
+            return a != b and abs(a[1] - b[1]) <= 1 and abs(a[0] - b[0]) <= 1
+
+        return constraint
 
     def get_constraints(self, x):
         if x in self.assigned_variables:
@@ -77,8 +96,9 @@ class HidatoCSP(CSP):
         self._update()
 
     def _update(self):
-        self._update_domain()
+        # self._update_domain()
         self._update_assigned_variables()
+        self.initialize_domain()
 
     def _update_domain(self):
         self.domain = {self._1d_to_2d_index(i) for i in range(self.size) if self.grid[i] == EMPTY}
