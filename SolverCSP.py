@@ -3,6 +3,7 @@ import functools
 import CSP
 from functools import partial
 
+
 class SolverCSP:
 
     def solve(self, problem: CSP):
@@ -23,23 +24,16 @@ class SolverCSP:
         return None
 
     def _minimum_remaining_values(self, problem: CSP):
-        return self._argmin(lambda var: len(problem.get_constraints(var)),
-                            problem.get_variables(),
-                            lambda var: not problem.is_assigned(var) and (
-                                    problem.is_assigned(var - 1) or problem.is_assigned(var + 1))
-                            )
+        min_var = None
+        min_value = -1
+
+        for x in problem.get_variables():
+            if not problem.is_assigned(x) and (problem.is_assigned(x - 1) or problem.is_assigned(x + 1)):
+                value = len(problem.get_constraints(x))
+                if min_var is None or value < min_value:
+                    min_var = x
+                    min_value = value
+        return min_var
 
     def num_constraints(self, value, problem):
         return len(problem.empty_neighbors(*value))
-
-    def _argmin(self, func, args, filter_func):
-        min_arg = None
-        min_value = -1
-
-        for arg in args:
-            if filter_func(arg):
-                value = func(arg)
-                if min_arg is None or value < min_value:
-                    min_arg = arg
-                    min_value = value
-        return min_arg

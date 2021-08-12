@@ -46,32 +46,7 @@ class HidatoGenerator:
         return population[:k]
 
 
-def compute_neighbors(width, height):
-    neighbors = {}
-    for y in range(height):
-        for x in range(width):
-            i = y * width + x
-            neighbors[i] = []
-            for dy in range(-1, 2):
-                for dx in range(-1, 2):
-                    nx, ny = x + dx, y + dy
-                    if nx == x and ny == y:
-                        continue
-                    if nx < 0 or nx >= width:
-                        continue
-                    if ny < 0 or ny >= height:
-                        continue
-                    j = ny * width + nx
-                    neighbors[i].append(j)
-    return neighbors
 
-
-def random_neighbor(width, height, index, cache={}):
-    key = (width, height)
-    if key not in cache:
-        cache[key] = compute_neighbors(width, height)
-    neighbors = cache[key]
-    return random.choice(neighbors[index])
 
 
 class Model(object):
@@ -88,7 +63,7 @@ class Model(object):
         for i in range(self.size):
             if i == self.end:
                 continue
-            self.next[i] = random_neighbor(self.width, self.height, i)
+            self.next[i] = self.random_neighbor(self.width, self.height, i)
 
     def energy(self):
         return self.get_grid().count(-1)
@@ -99,7 +74,7 @@ class Model(object):
             if i == self.end:
                 continue
             result = (i, self.next[i])
-            self.next[i] = random_neighbor(self.width, self.height, i)
+            self.next[i] = self.random_neighbor(self.width, self.height, i)
             return result
 
     def undo_move(self, xxx_todo_changeme):
@@ -108,7 +83,7 @@ class Model(object):
 
     def get_grid(self):
         result = [-1] * self.size
-        lookup = dict((self.next[i], i) for i in range(self.size))
+        lookup = {self.next[i]: i for i in range(self.size)}
         index = self.end
         number = self.size
         for _ in range(self.size):
@@ -119,27 +94,28 @@ class Model(object):
             index = lookup[index]
         return result
 
+    def compute_neighbors(self, width, height):
+        neighbors = {}
+        for y in range(height):
+            for x in range(width):
+                i = y * width + x
+                neighbors[i] = []
+                for dy in range(-1, 2):
+                    for dx in range(-1, 2):
+                        nx, ny = x + dx, y + dy
+                        if nx == x and ny == y:
+                            continue
+                        if nx < 0 or nx >= width:
+                            continue
+                        if ny < 0 or ny >= height:
+                            continue
+                        j = ny * width + nx
+                        neighbors[i].append(j)
+        return neighbors
 
-def display(width, height, grid):
-    for y in range(height):
-        print((''.join(['+'] + ['--+' for _ in range(width)])))
-        row = ['|']
-        for x in range(width):
-            i = y * width + x
-            if grid[i] == -1:
-                row.append('* |')
-            else:
-                row.append('%2d|' % grid[i])
-        print((''.join(row)))
-    print((''.join(['+'] + ['--+' for _ in range(width)])))
-
-
-def main():
-    width = height = 5
-    gen = HidatoGenerator()
-    hidato = gen.generateHidato(width, height)
-    hidato.display()
-
-
-if __name__ == '__main__':
-    main()
+    def random_neighbor(self, width, height, index, cache={}):
+        key = (width, height)
+        if key not in cache:
+            cache[key] = self.compute_neighbors(width, height)
+        neighbors = cache[key]
+        return random.choice(neighbors[index])

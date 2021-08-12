@@ -38,48 +38,55 @@ class HidatoCSP(CSP):
         return constraint
 
     def get_constraints(self, x):
-        if x in self.assigned_variables:
+        if self._is_assigned(x):
             return {self._2d_index(x)}
 
         if x == 1 and 2 in self.assigned_variables:
             return self._neighbors_of(2) & self.domain
 
         if 1 < x < self.size:
-            return (self._neighbors_of(x - 1) if x - 1 in self.assigned_variables else self.domain) \
-                   & (self._neighbors_of(x + 1) if x + 1 in self.assigned_variables else self.domain) \
+            return (self._neighbors_of(x - 1) if self._is_assigned(x - 1) else self.domain) \
+                   & (self._neighbors_of(x + 1) if self._is_assigned(x + 1) else self.domain) \
                    & self.domain
 
-        if x == self.size and x - 1 in self.assigned_variables:
+        if x == self.size and self._is_assigned(x - 1):
             return self._neighbors_of(x - 1) & self.domain
 
         return set()
 
     def _neighbors_of(self, variable):
-        if variable not in self.assigned_variables:
+        if not self._is_assigned(variable):
             raise ValueError()
 
         x, y = self._2d_index(variable)
         return self._neighbors_of_index(x, y)
 
+    def _is_assigned(self, x):
+        return x in self.assigned_variables
+
     def _neighbors_of_index(self, x, y):
-        return {(x + i, y + j)
-                for i in range(-1, 2)
-                for j in range(-1, 2)
-                if self._in_grid(x + i, y + j)
-                }
+        return {(i, j) for i, j in self._surrounding_indices(x, y) if self._in_grid(i, j)}
+
+    @staticmethod
+    def _surrounding_indices(x, y):
+        return {
+            (x + i, y + j)
+            for i in range(-1, 2)
+            for j in range(-1, 2)
+        }
 
     def _1d_to_2d_index(self, index):
         return index // self.width, index % self.width
 
     def _2d_index(self, variable):
-        i = self.grid.index(variable)
+        i = self._1d_index_of(variable)
         return self._1d_to_2d_index(i)
 
     def _1d_index(self, i, j):
         return i * self.width + j
 
     def _in_grid(self, x, y):
-        return 0 <= x < self.width and 0 <= y < self.height
+        return 0 <= x < self.height and 0 <= y < self.width
 
     def assign(self, x, value):
         index = self._1d_index(*value)
@@ -89,11 +96,14 @@ class HidatoCSP(CSP):
         self._update()
 
     def delete_assignment(self, variable):
-        if variable not in self.assigned_variables:
-            raise ValueError(f"Variable {variable} not assigned.")
-        index = self.grid.index(variable)
+        index = self._1d_index_of(variable)
         self.grid[index] = EMPTY
         self._update()
+
+    def _1d_index_of(self, x):
+        if x not in self.assigned_variables:
+            raise ValueError(f"Variable {x} not assigned.")
+        return self.grid.index(x)
 
     def _update(self):
         # self._update_domain()
@@ -109,8 +119,23 @@ class HidatoCSP(CSP):
     def is_assigned(self, x):
         return x in self.assigned_variables
 
+    def is_correct(self):
+        return self.is_complete() and self.is_consistent()
+
     def is_complete(self):
         return len(self.assigned_variables) == len(self.get_variables())
+
+    def is_consistent(self):
+        x_before, y_before = self._2d_index(1)
+        for i in range(2, self.size + 1):
+            x, y = self._2d_index(i)
+            if not self._are_attached(x, y, x_before, y_before):
+                return False
+            x_before, y_before = x, y
+        return True
+
+    def _are_attached(self, x1, y1, x2, y2):
+        return abs(x1 - x2) <= 1 and abs(y1 - y2) <= 1 and (x1 != x2 or y1 != y2)
 
     def empty_neighbors(self, x, y):
         return self._neighbors_of_index(x, y) & self.domain
