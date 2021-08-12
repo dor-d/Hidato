@@ -42,7 +42,7 @@ def _solve(hidato):
 def main():
     random.seed(0)
     # width = height = DIM
-    solve_hidato(5, 6)
+    solve_hidato(6, 5)
 
 
 if __name__ == '__main__':

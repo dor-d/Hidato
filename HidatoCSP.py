@@ -50,11 +50,11 @@ class HidatoCSP(CSP):
 
     @staticmethod
     def _surrounding_indices(x, y):
-        return (
+        return {
             (x + i, y + j)
             for i in range(-1, 2)
             for j in range(-1, 2)
-        )
+        }
 
     def _1d_to_2d_index(self, index):
         return index // self.width, index % self.width
@@ -67,7 +67,7 @@ class HidatoCSP(CSP):
         return i * self.width + j
 
     def _in_grid(self, x, y):
-        return 0 <= x < self.width and 0 <= y < self.height
+        return 0 <= x < self.height and 0 <= y < self.width
 
     def assign(self, x, value):
         index = self._1d_index(*value)
@@ -109,13 +109,13 @@ class HidatoCSP(CSP):
         x_before, y_before = self._2d_index(1)
         for i in range(2, self.size + 1):
             x, y = self._2d_index(i)
-            if not self._are_consecutive(x, y, x_before, y_before):
+            if not self._are_attached(x, y, x_before, y_before):
                 return False
             x_before, y_before = x, y
         return True
 
-    def _are_consecutive(self, x1, y1, x2, y2):
-        return abs(x1 - x2) == abs(y1 - y2) == 1
+    def _are_attached(self, x1, y1, x2, y2):
+        return abs(x1 - x2) <= 1 and abs(y1 - y2) <= 1 and (x1 != x2 or y1 != y2)
 
     def empty_neighbors(self, x, y):
         return self._neighbors_of_index(x, y) & self.domain
