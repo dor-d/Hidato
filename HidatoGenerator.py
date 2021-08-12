@@ -83,7 +83,7 @@ class Model(object):
 
     def get_grid(self):
         result = [-1] * self.size
-        lookup = dict((self.next[i], i) for i in range(self.size))
+        lookup = {self.next[i]: i for i in range(self.size)}
         index = self.end
         number = self.size
         for _ in range(self.size):
