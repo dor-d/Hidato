@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from CSP import CSP
 
 EMPTY = -1
@@ -13,7 +15,7 @@ class HidatoCSP(CSP):
         self._update()
 
     def get_variables(self):
-        return list(range(1, self.size + 1))
+        return range(1, self.size + 1)
 
     def get_domain(self, x):
         return self.domain

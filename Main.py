@@ -5,23 +5,30 @@ from HidatoCSP import *
 from SolverCSP import *
 import sys
 
-DIM = 13
+DIM = 14
 
 
 def timeit(func):
     def timed_func(*args, **kwargs):
         start = time.time()
         func(*args, *kwargs)
-        total = time.time() - start
-        if total < 60:
-            print(f'Running {func.__name__} took ' + '{0:.4g}'.format(total) + ' seconds.')
-        else:
-            mins = total // 60
-            secs = total % 60
-            print(
-                f'Running {func.__name__} took {mins} minute{"s" if mins > 1 else ""} and {"{0:.4g}".format(secs)} seconds.')
+        _print_runnning_time(_time_since(start), func.__name__)
 
     return timed_func
+
+
+def _time_since(start_time):
+    return time.time() - start_time
+
+
+def _print_runnning_time(runtime, function_name):
+    if runtime < 60:
+        print(f'Running {function_name} took {"{0:.4g}".format(runtime)} seconds.')
+    else:
+        mins = runtime // 60
+        secs = runtime % 60
+        print(
+            f'Running {function_name} took {mins} minute{"s" if mins > 1 else ""} and {"{0:.4g}".format(secs)} seconds.')
 
 
 @timeit
