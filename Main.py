@@ -1,27 +1,11 @@
-import time
-import ac3
-from HidatoGenerator import *
-from HidatoCSP import *
-from SolverCSP import *
 import sys
+import random
 
-DIM = 5
+from HidatoGenerator import HidatoGenerator
+from SolverCSP import SolverCSP
+from utils import timeit
 
-
-def timeit(func):
-    def timed_func(*args, **kwargs):
-        start = time.time()
-        func(*args, *kwargs)
-        total = time.time() - start
-        if total < 60:
-            print(f'Running {func.__name__} took ' + '{0:.4g}'.format(total) + ' seconds.')
-        else:
-            mins = total // 60
-            secs = total % 60
-            print(
-                f'Running {func.__name__} took {mins} minute{"s" if mins > 1 else ""} and {"{0:.4g}".format(secs)} seconds.')
-
-    return timed_func
+DIM = 13
 
 
 @timeit
@@ -35,11 +19,6 @@ def solve_hidato(width, height):
 
     sys.stdout.flush()
 
-    arcs = [(i, i+1) for i in hidato.get_variables() if i < hidato.size]
-    arcs.extend((i, i - 1) for i in hidato.get_variables() if i > 1)
-    result = ac3.ac3(hidato, arcs)
-    result = ac3.ac3(hidato, arcs)
-
     print("\nAfter solve:")
     _solve(hidato)
     hidato.display()
@@ -50,7 +29,7 @@ def solve_hidato(width, height):
 @timeit
 def _solve(hidato):
     solver = SolverCSP()
-    solver.solve(hidato)
+    solver.solve(hidato, "MRV", "LCV", forward_checking=True)
 
 
 def main():

@@ -28,7 +28,7 @@ class HidatoCSP(CSP):
     def get_domain(self, x):
         return self.domains[x]
 
-    def get_constraints_between(self, x, y):
+    def get_binary_constraints(self, x, y):
         if (abs(y - x) != 1):
             return lambda a, b: True
 

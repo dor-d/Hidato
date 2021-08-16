@@ -1,35 +1,6 @@
 from CSP import CSP
 
-class CSPPlus(CSP):
-    def __init__(self):
-        self.domains = {
-            'a': [2, 3, 4, 5, 6, 7],
-            'b': [4, 5, 6, 7, 8, 9],
-            'c': [1, 2, 3, 4, 5]
-        }
-
-        self.constraints = {
-            ('a', 'b'): lambda a, b: a * 2 == b,
-            ('b', 'a'): lambda b, a: b == 2 * a,
-            ('a', 'c'): lambda a, c: a == c,
-            ('c', 'a'): lambda c, a: c == a,
-            ('b', 'c'): lambda b, c: b >= c - 2,
-            ('b', 'c'): lambda b, c: b <= c + 2,
-            ('c', 'b'): lambda c, b: b >= c - 2,
-            ('c', 'b'): lambda c, b: b <= c + 2
-        }
-
-    def get_variables(self):
-        return list(self.domains.keys())
-
-    def get_domain(self, variable):
-        return self.domains[variable]
-
-    def get_constraints_between(self, x, y):
-        return self.constraints[(x, y)]
-
-
-def ac3(problem, arcs):
+def ac3(problem: CSP, arcs):
     queue = arcs.copy()
 
     while queue:
@@ -49,10 +20,11 @@ def ac3(problem, arcs):
 
             queue.extend(neighbors)
 
-    return True, problem.domains
+    return True
 
-def revise(problem, a, b):
-    constraint_func = problem.get_constraints_between(a, b)
+
+def revise(problem: CSP, a, b):
+    constraint_func = problem.get_binary_constraints(a, b)
 
     a_domain = problem.get_domain(a).copy()
     b_domain = problem.get_domain(b).copy()
@@ -71,7 +43,4 @@ def revise(problem, a, b):
 
     return revised
 
-
-arcs = [('a', 'b'), ('b', 'a'), ('b', 'c'), ('c', 'b'), ('c', 'a'), ('a', 'c')]
-print(ac3(CSPPlus(), arcs))
 
