@@ -17,3 +17,6 @@ class CSP:
 
     def is_assigned(self, variable):
         pass
+
+    def get_binary_constraints(self, x, y):
+        pass
