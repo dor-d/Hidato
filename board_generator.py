@@ -1,3 +1,5 @@
+import subprocess
+
 import anneal
 import random
 from hidato_csp import *
@@ -6,9 +8,15 @@ from hidato_csp import *
 class HidatoGenerator:
 
     def generate_hidato(self, width, height, alpha=0.5):
-        grid = self.generate_puzzle(width, height)
+        grid = self.generate_puzzle_c(width, height)
         grid = self.omit_from_grid(width * height, grid, alpha=alpha)
         return HidatoCSP(width, height, grid)
+
+    def generate_puzzle_c(self, width, height):
+        result = subprocess.run(["./generator", str(width), str(height)], input=None, capture_output=True, encoding='ascii', text=True)
+        stdout = result.stdout.rstrip(",")
+        grid = [int(i) for i in stdout.split(",")]
+        return grid
 
     def generate_puzzle(self, width, height):
         def energy(state):
