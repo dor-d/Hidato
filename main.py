@@ -17,7 +17,7 @@ def generate_hidato(width, height):
     print(f'Solving a {width} x {height} Hidato...\n')
 
     gen = HidatoGenerator()
-    hidato = gen.generateHidato(width, height, alpha=0.5)
+    hidato = gen.generate_hidato(width, height, alpha=0.5)
     print("Before solve:")
     hidato.display()
 
@@ -30,8 +30,8 @@ def generate_hidato(width, height):
 def _solve(hidato, select_variable, order_values, forward_checking):
     print("\nAfter solve:")
 
-    solver = CSPSolver()
-    solver.solve(hidato, select_variable, order_values, forward_checking)
+    solver = CSPSolver(hidato)
+    solver.solve(select_variable, order_values, forward_checking)
     hidato.display()
 
     print(f"Solution is {'correct' if hidato.is_correct() else 'incorrect'}.")

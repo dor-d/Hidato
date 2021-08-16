@@ -1,11 +1,11 @@
 import anneal
 import random
-from HidatoCSP import *
+from hidato_csp import *
 
 
 class HidatoGenerator:
 
-    def generateHidato(self, width, height, alpha=0.5):
+    def generate_hidato(self, width, height, alpha=0.5):
         grid = self.generate_puzzle(width, height)
         grid = self.omit_from_grid(width * height, grid, alpha=alpha)
         return HidatoCSP(width, height, grid)
@@ -44,9 +44,6 @@ class HidatoGenerator:
     def choices(self, population, k=1):
         random.shuffle(population)
         return population[:k]
-
-
-
 
 
 class Model(object):

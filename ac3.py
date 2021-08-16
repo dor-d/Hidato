@@ -1,5 +1,6 @@
 from csp import CSP
 
+
 def ac3(problem: CSP, arcs):
     queue = arcs.copy()
 
@@ -42,5 +43,3 @@ def revise(problem: CSP, a, b):
             revised = True
 
     return revised
-
-

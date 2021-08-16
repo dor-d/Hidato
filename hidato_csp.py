@@ -4,65 +4,64 @@ EMPTY = -1
 
 
 class HidatoCSP(CSP):
-
     def __init__(self, width, height, grid):
         self.width = width
         self.height = height
         self.size = len(grid)
         self.grid = grid
+        self.original_grid = grid.copy()
         self.domains = {}
+        self._update()
+
+    def reset(self):
+        self.grid = self.original_grid.copy()
         self._update()
 
     def get_variables(self):
         return range(1, self.size + 1)
 
     def initialize_domain(self):
-        default_domain = [self._1d_to_2d_index(i) for i in range(self.size) if self.grid[i] == EMPTY]
         for x in self.get_variables():
-            if x in self.assigned_variables:
+            if self.is_assigned(x):
                 self.domains[x] = [self._2d_index(x)]
             else:
-                self.domains[x] = default_domain.copy()
-
+                self.domains[x] = self.empty_cells.copy()
 
     def get_domain(self, x):
         return self.domains[x]
 
     def get_binary_constraints(self, x, y):
-        if (abs(y - x) != 1):
+        if abs(y - x) != 1:
             return lambda a, b: True
 
-        def constraint(a,b):
-            return a != b and abs(a[1] - b[1]) <= 1 and abs(a[0] - b[0]) <= 1
+        def constraint(a, b):
+            return self._are_attached(*a, *b)
 
         return constraint
 
     def get_constraints(self, x):
-        if self._is_assigned(x):
+        if self.is_assigned(x):
             return {self._2d_index(x)}
 
-        if x == 1 and 2 in self.assigned_variables:
-            return self._neighbors_of(2) & self.domain
+        if x == 1 and self.is_assigned(2):
+            return self._neighbors_of(2) & self.empty_cells
 
         if 1 < x < self.size:
-            return (self._neighbors_of(x - 1) if self._is_assigned(x - 1) else self.domain) \
-                   & (self._neighbors_of(x + 1) if self._is_assigned(x + 1) else self.domain) \
-                   & self.domain
+            return (self._neighbors_of(x - 1) if self.is_assigned(x - 1) else self.empty_cells) \
+                   & (self._neighbors_of(x + 1) if self.is_assigned(x + 1) else self.empty_cells) \
+                   & self.empty_cells
 
-        if x == self.size and self._is_assigned(x - 1):
-            return self._neighbors_of(x - 1) & self.domain
+        if x == self.size and self.is_assigned(x - 1):
+            return self._neighbors_of(x - 1) & self.empty_cells
 
-        return set()
+        return ()
 
     def _neighbors_of(self, variable):
-        if not self._is_assigned(variable):
-            raise ValueError()
+        if not self.is_assigned(variable):
+            raise ValueError(f"The variable {variable} is not assigned.")
 
         x, y = self._2d_index(variable)
         return self._neighbors_of_index(x, y)
-
-    def _is_assigned(self, x):
-        return x in self.assigned_variables
 
     def _neighbors_of_index(self, x, y):
         return {(i, j) for i, j in self._surrounding_indices(x, y) if self._in_grid(i, j)}
@@ -85,6 +84,11 @@ class HidatoCSP(CSP):
     def _1d_index(self, i, j):
         return i * self.width + j
 
+    def _1d_index_of(self, x):
+        if not self.is_assigned(x):
+            raise ValueError(f"Variable {x} not assigned.")
+        return self.grid.index(x)
+
     def _in_grid(self, x, y):
         return 0 <= x < self.height and 0 <= y < self.width
 
@@ -100,45 +104,36 @@ class HidatoCSP(CSP):
         self.grid[index] = EMPTY
         self._update()
 
-    def _1d_index_of(self, x):
-        if x not in self.assigned_variables:
-            raise ValueError(f"Variable {x} not assigned.")
-        return self.grid.index(x)
-
     def _update(self):
-        self._update_domain()
-        self._update_assigned_variables()
+        self._update_empty_cells()
         self.initialize_domain()
 
-    def _update_domain(self):
-        self.domain = {self._1d_to_2d_index(i) for i in range(self.size) if self.grid[i] == EMPTY}
-
-    def _update_assigned_variables(self):
-        self.assigned_variables = {x for x in self.grid if x != EMPTY}
+    def _update_empty_cells(self):
+        self.empty_cells = {self._1d_to_2d_index(i) for i in range(self.size) if self.grid[i] == EMPTY}
 
     def is_assigned(self, x):
-        return x in self.assigned_variables
+        return x in self.grid
+
+    def is_complete(self):
+        return EMPTY not in self.grid
+
+    def is_consistent(self):
+        prev_x, prev_y = self._2d_index(1)
+        for i in range(2, self.size + 1):
+            x, y = self._2d_index(i)
+            if not self._are_attached(x, y, prev_x, prev_y):
+                return False
+            prev_x, prev_y = x, y
+        return True
 
     def is_correct(self):
         return self.is_complete() and self.is_consistent()
-
-    def is_complete(self):
-        return len(self.assigned_variables) == len(self.get_variables())
-
-    def is_consistent(self):
-        x_before, y_before = self._2d_index(1)
-        for i in range(2, self.size + 1):
-            x, y = self._2d_index(i)
-            if not self._are_attached(x, y, x_before, y_before):
-                return False
-            x_before, y_before = x, y
-        return True
 
     def _are_attached(self, x1, y1, x2, y2):
         return abs(x1 - x2) <= 1 and abs(y1 - y2) <= 1 and (x1 != x2 or y1 != y2)
 
     def empty_neighbors(self, x, y):
-        return self._neighbors_of_index(x, y) & self.domain
+        return self._neighbors_of_index(x, y) & self.empty_cells
 
     def display(self):
         for y in range(self.height):
