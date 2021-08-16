@@ -29,13 +29,13 @@ class SolverCSP:
             problem.assign(variable, value)
             if forward_checking:
                 if (variable == 1):
-                    neighbors = [(2, 1)]
+                    arcs = [(2, 1)]
                 elif (variable == problem.size):
-                    neighbors = [(problem.size - 1, variable)]
+                    arcs = [(problem.size - 1, variable)]
                 else:
-                    neighbors = [(variable - 1, variable), (variable + 1, variable)]
+                    arcs = [(variable - 1, variable), (variable + 1, variable)]
 
-                if not ac3(problem, neighbors):
+                if not ac3(problem, arcs):
                     problem.delete_assignment(variable)
                     continue
 

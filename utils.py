@@ -14,4 +14,6 @@ def timeit(func):
             print(
                 f'Running {func.__name__} took {mins} minute{"s" if mins > 1 else ""} and {"{0:.4g}".format(secs)} seconds.')
 
+        return total
+
     return timed_func
