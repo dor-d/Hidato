@@ -1,4 +1,4 @@
-from CSP import CSP
+from csp import CSP
 
 EMPTY = -1
 

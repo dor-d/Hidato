@@ -1,4 +1,4 @@
-from CSP import CSP
+from csp import CSP
 
 def ac3(problem: CSP, arcs):
     queue = arcs.copy()

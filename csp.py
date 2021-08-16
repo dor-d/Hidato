@@ -20,3 +20,6 @@ class CSP:
 
     def get_binary_constraints(self, x, y):
         pass
+
+    def is_complete(self):
+        pass
