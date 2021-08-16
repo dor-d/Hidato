@@ -1,5 +1,3 @@
-from functools import lru_cache
-
 from CSP import CSP
 
 EMPTY = -1
