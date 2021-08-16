@@ -1,11 +1,11 @@
 import time
-
+import ac3
 from HidatoGenerator import *
 from HidatoCSP import *
 from SolverCSP import *
 import sys
 
-DIM = 13
+DIM = 5
 
 
 def timeit(func):
@@ -35,8 +35,13 @@ def solve_hidato(width, height):
 
     sys.stdout.flush()
 
-    _solve(hidato)
+    arcs = [(i, i+1) for i in hidato.get_variables() if i < hidato.size]
+    arcs.extend((i, i - 1) for i in hidato.get_variables() if i > 1)
+    result = ac3.ac3(hidato, arcs)
+    result = ac3.ac3(hidato, arcs)
+
     print("\nAfter solve:")
+    _solve(hidato)
     hidato.display()
 
     print(f"Solution is {'correct' if hidato.is_correct() else 'incorrect'}.")

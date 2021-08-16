@@ -28,7 +28,7 @@ class HidatoCSP(CSP):
     def get_domain(self, x):
         return self.domains[x]
 
-    def get_constraints_2(self, x, y):
+    def get_constraints_between(self, x, y):
         if (abs(y - x) != 1):
             return lambda a, b: True
 
@@ -106,7 +106,7 @@ class HidatoCSP(CSP):
         return self.grid.index(x)
 
     def _update(self):
-        # self._update_domain()
+        self._update_domain()
         self._update_assigned_variables()
         self.initialize_domain()
 
