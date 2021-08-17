@@ -1,4 +1,5 @@
 import subprocess
+import os
 
 import anneal
 import random
@@ -13,7 +14,10 @@ class HidatoGenerator:
         return HidatoCSP(width, height, grid)
 
     def generate_puzzle_c(self, width, height):
-        result = subprocess.run(["./generator", str(width), str(height)], input=None, capture_output=True, encoding='ascii', text=True)
+        name = "./generator"
+        if os.name == 'nt':
+            name = "./generator.exe"
+        result = subprocess.run([name, str(width), str(height)], input=None, capture_output=True, encoding='ascii', text=True)
         stdout = result.stdout.rstrip(",")
         grid = [int(i) for i in stdout.split(",")]
         return grid
