@@ -64,7 +64,7 @@ class HidatoCSP(CSP):
         return self._neighbors_of_index(x, y)
 
     def _neighbors_of_index(self, x, y):
-        return {(i, j) for i, j in self._surrounding_indices(x, y) if self._in_grid(i, j)}
+        return {(i, j) for i, j in self._surrounding_indices(x, y) if self._is_in_grid(i, j)}
 
     @staticmethod
     def _surrounding_indices(x, y):
@@ -89,7 +89,7 @@ class HidatoCSP(CSP):
             raise ValueError(f"Variable {x} not assigned.")
         return self.grid.index(x)
 
-    def _in_grid(self, x, y):
+    def _is_in_grid(self, x, y):
         return 0 <= x < self.height and 0 <= y < self.width
 
     def assign(self, x, value):
