@@ -8,16 +8,23 @@ from hidato_csp import *
 
 class HidatoGenerator:
 
-    def generate_hidato(self, width, height, alpha=0.5):
-        grid = self.generate_puzzle_c(width, height)
-        grid = self.omit_from_grid(width * height, grid, alpha=alpha)
+    def generate_hidato_csp(self, width, height, alpha=0.5):
+        grid = self._generate_grid(width, height, alpha)
         return HidatoCSP(width, height, grid)
 
-    def generate_puzzle_c(self, width, height):
+    def generate_hidato_search_problem(self, width, height, alpha=0.5, random_restart_chance=0.1):
+        grid = self._generate_grid(width, height, alpha)
+
+    def _generate_grid(self, width, height, alpha=0.5):
+        grid = self._generate_puzzle_c(width, height)
+        return self.omit_from_grid(width * height, grid, alpha=alpha)
+
+    def _generate_puzzle_c(self, width, height):
         name = "./generator"
         if os.name == 'nt':
             name = "./generator.exe"
-        result = subprocess.run([name, str(width), str(height)], input=None, capture_output=True, encoding='ascii', text=True)
+        result = subprocess.run([name, str(width), str(height)], input=None, capture_output=True, encoding='ascii',
+                                text=True)
         stdout = result.stdout.rstrip(",")
         grid = [int(i) for i in stdout.split(",")]
         return grid
