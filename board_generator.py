@@ -3,6 +3,8 @@ import os
 
 import anneal
 import random
+
+from HidatoSearchProblem import HidatoSearchProblem
 from hidato_csp import *
 
 
@@ -12,8 +14,9 @@ class HidatoGenerator:
         grid = self._generate_grid(width, height, alpha)
         return HidatoCSP(width, height, grid)
 
-    def generate_hidato_search_problem(self, width, height, alpha=0.5, random_restart_chance=0.1):
+    def generate_hidato_search_problem(self, width, height, alpha=0.5):
         grid = self._generate_grid(width, height, alpha)
+        return HidatoSearchProblem(width, height, grid)
 
     def _generate_grid(self, width, height, alpha=0.5):
         grid = self._generate_puzzle_c(width, height)
