@@ -17,7 +17,7 @@ def generate_hidato(width, height):
     print(f'Solving a {width} x {height} Hidato...\n')
 
     gen = HidatoGenerator()
-    hidato = gen.generate_hidato(width, height, alpha=0.5)
+    hidato = gen.generate_hidato_csp(width, height, alpha=0.5)
     print("Before solve:")
     hidato.display()
 
@@ -43,8 +43,8 @@ def solve_hidato(dimension):
     _solve(hidato, select_variable="MRV", order_values="LCV", forward_checking=True)
 
 
-def benchmark():
-    width = height = DEFAULT_DIMENSION
+def benchmark(dimension):
+    width = height = dimension
     hidato = generate_hidato(width, height)
     time_with_fc = _solve(hidato, select_variable="MRV", order_values="LCV", forward_checking=True)
     time_without_fc = _solve(hidato, select_variable="MRV", order_values="LCV", forward_checking=False)
@@ -57,7 +57,7 @@ def main():
     args = parser.parse_args()
 
     if args.benchmark:
-        benchmark()
+        benchmark(args.dimension)
     else:
         solve_hidato(args.dimension)
 
