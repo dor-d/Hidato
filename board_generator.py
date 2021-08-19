@@ -4,21 +4,21 @@ import os
 import anneal
 import random
 
-from HidatoSearchProblem import HidatoSearchProblem
+from hidato_search_problem import HidatoSearchProblem
 from hidato_csp import *
 
 
 class HidatoGenerator:
 
-    def generate_hidato_csp(self, width, height, alpha=0.5):
-        grid = self._generate_grid(width, height, alpha)
-        return HidatoCSP(width, height, grid)
+    # def generate_hidato_csp(self, width, height, alpha=0.5):
+    #     grid = self._generate_grid(width, height, alpha)
+    #     return HidatoCSP(width, height, grid)
+    #
+    # def generate_hidato_search_problem(self, width, height, alpha=0.5):
+    #     grid = self._generate_grid(width, height, alpha)
+    #     return HidatoSearchProblem(width, height, grid)
 
-    def generate_hidato_search_problem(self, width, height, alpha=0.5):
-        grid = self._generate_grid(width, height, alpha)
-        return HidatoSearchProblem(width, height, grid)
-
-    def _generate_grid(self, width, height, alpha=0.5):
+    def generate_grid(self, width, height, alpha=0.5):
         grid = self._generate_puzzle_c(width, height)
         return self.omit_from_grid(width * height, grid, alpha=alpha)
 

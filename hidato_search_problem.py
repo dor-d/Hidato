@@ -1,4 +1,3 @@
-from SearchProblem import SearchProblem
 import numpy as np
 
 EMPTY = -1
@@ -10,7 +9,7 @@ class HidatoSearchProblem:
         self.shape = (width, height)
         self.size = len(grid)
         self.grid = np.array(grid).reshape(self.shape)
-        self.fixed_cells = self.grid[self.grid != EMPTY]
+        self.fixed_cells = self.grid != EMPTY
 
     def init_random_state(self):
         indices = self._get_unfixed_cells()
@@ -24,7 +23,7 @@ class HidatoSearchProblem:
         return self.grid
 
     def _get_unfixed_cells(self):
-        return np.argwhere(not self.fixed_cells)
+        return np.argwhere(self.fixed_cells == False)
 
     def _get_fixed_numbers(self):
         return self.grid[self.fixed_cells]
@@ -56,7 +55,7 @@ class HidatoSearchProblem:
 
     @staticmethod
     def _get_index_in_state(state, x):
-        return tuple(np.argwhere(state == x))
+        return tuple(np.argwhere(state == x)[0])
 
     @staticmethod
     def _is_attached(a_index, b_index):

@@ -1,6 +1,6 @@
 import random
 
-from HidatoSearchProblem import *
+from hidato_search_problem import *
 
 THRESHOLD = 0
 
