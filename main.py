@@ -17,7 +17,7 @@ def generate_hidato(width, height):
     print(f'Solving a {width} x {height} Hidato...\n')
 
     gen = HidatoGenerator()
-    hidato = gen.generate_hidato(width, height, alpha=0.5)
+    hidato = gen.generate_hidato_csp(width, height, alpha=0.5)
     print("Before solve:")
     hidato.display()
 
