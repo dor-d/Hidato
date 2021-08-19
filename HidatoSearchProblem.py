@@ -21,6 +21,8 @@ class HidatoSearchProblem:
                 x, y = indices.pop(0)
                 self.grid[x, y] = i
 
+        return self.grid
+
     def _get_unfixed_cells(self):
         return np.argwhere(not self.fixed_cells)
 
@@ -39,12 +41,12 @@ class HidatoSearchProblem:
     def set_current_state(self, state):
         self.grid = state
 
-    def get_loss(self):
+    def get_loss(self, state):
         loss = 0
 
-        prev_index = self._get_index(1)
+        prev_index = self._get_index_in_state(state, 1)
         for i in range(2, self.size + 1):
-            current_index = self._get_index(i)
+            current_index = self._get_index_in_state(state, i)
             if not self._is_attached(prev_index, current_index):
                 loss += 1
 
@@ -52,8 +54,9 @@ class HidatoSearchProblem:
 
         return loss
 
-    def _get_index(self, x):
-        return tuple(np.argwhere(self.grid == x))
+    @staticmethod
+    def _get_index_in_state(state, x):
+        return tuple(np.argwhere(state == x))
 
     @staticmethod
     def _is_attached(a_index, b_index):
