@@ -17,7 +17,6 @@ DEFAULT_DIMENSION = 5
 def generate_hidato(width, height, alpha):
     print(f'Solving a {width} x {height} Hidato...\n')
     grid = _generate_hidato_grid(height, width, alpha)
-    # print(grid)
     return grid
 
     # hidato = gen.generate_hidato_csp(width, height, alpha=0.5)
@@ -60,13 +59,7 @@ def _solve_hill_climbing(width, height, grid):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Hidato Solver')
-    parser.add_argument('--hill', dest='hill_climbing', action='store_true')
-    parser.add_argument('--benchmark', dest='benchmark', action='store_true')
-    parser.add_argument('--dim', dest="dimension", default=DEFAULT_DIMENSION, type=int)
-    parser.add_argument('--a', dest="alpha", default=DEFAULT_ALPHA, type=float)
-
-    args = parser.parse_args()
+    args = parse_args()
 
     width = height = args.dimension
     grid = generate_hidato(width, height, args.alpha)
@@ -80,6 +73,15 @@ def main():
 
     print("\nAfter solve:")
 
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='Hidato Solver')
+    parser.add_argument('--hill', dest='hill_climbing', action='store_true')
+    parser.add_argument('--benchmark', dest='benchmark', action='store_true')
+    parser.add_argument('--dim', dest="dimension", default=DEFAULT_DIMENSION, type=int)
+    parser.add_argument('--a', dest="alpha", default=DEFAULT_ALPHA, type=float)
+    args = parser.parse_args()
+    return args
 
 
 if __name__ == '__main__':
