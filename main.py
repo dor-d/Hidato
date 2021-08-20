@@ -75,13 +75,18 @@ def main():
 
 
 def parse_args():
+    parser = setup_arg_parser()
+    args = parser.parse_args()
+    return args
+
+
+def setup_arg_parser():
     parser = argparse.ArgumentParser(description='Hidato Solver')
     parser.add_argument('--hill', dest='hill_climbing', action='store_true')
     parser.add_argument('--benchmark', dest='benchmark', action='store_true')
     parser.add_argument('--dim', dest="dimension", default=DEFAULT_DIMENSION, type=int)
     parser.add_argument('--a', dest="alpha", default=DEFAULT_ALPHA, type=float)
-    args = parser.parse_args()
-    return args
+    return parser
 
 
 if __name__ == '__main__':
