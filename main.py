@@ -10,14 +10,14 @@ from hidato_search_problem import HidatoSearchProblem
 from HillClimber import HillClimber
 
 DEFAULT_ALPHA = 0.5
-DEFAULT_DIMENSION = 14
+DEFAULT_DIMENSION = 5
 
 
 @timeit
 def generate_hidato(width, height, alpha):
     print(f'Solving a {width} x {height} Hidato...\n')
     grid = _generate_hidato_grid(height, width, alpha)
-    print(grid)
+    # print(grid)
     return grid
 
     # hidato = gen.generate_hidato_csp(width, height, alpha=0.5)
@@ -53,7 +53,8 @@ def benchmark(width, height, grid):
 
 
 def _solve_hill_climbing(width, height, grid):
-    problem = HidatoSearchProblem(5, 5, grid)
+    problem = HidatoSearchProblem(width, height, grid)
+    problem.display()
     solver = HillClimber()
     solver.solve(problem)
 

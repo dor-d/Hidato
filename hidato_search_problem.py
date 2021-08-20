@@ -71,3 +71,16 @@ class HidatoSearchProblem:
     @staticmethod
     def _is_attached(a_index, b_index):
         return abs(a_index[0] - b_index[0]) <= 1 and abs(a_index[1] - b_index[1]) <= 1 and a_index != b_index
+
+    def display(self):
+        for x in range(self.shape[0]):
+            print((''.join(['+'] + ['--+' for _ in range(self.shape[1])])))
+            row = ['|']
+            for y in range(self.shape[1]):
+                # i = y * self.shape[1] + x
+                if self.grid[x, y] == EMPTY:
+                    row.append('* |')
+                else:
+                    row.append('%2d|' % self.grid[x, y])
+            print((''.join(row)))
+        print((''.join(['+'] + ['--+' for _ in range(self.shape[1])])))

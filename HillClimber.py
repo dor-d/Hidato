@@ -29,3 +29,5 @@ class HillClimber:
     @staticmethod
     def _should_do_random_restart(random_restart_chance=0.1):
         return random.random() < random_restart_chance
+
+
