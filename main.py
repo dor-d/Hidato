@@ -10,7 +10,7 @@ from hidato_search_problem import HidatoSearchProblem
 from HillClimber import HillClimber
 
 DEFAULT_ALPHA = 0.5
-DEFAULT_DIMENSION = 5
+DEFAULT_DIMENSION = 10
 
 
 @timeit
