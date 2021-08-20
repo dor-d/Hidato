@@ -10,9 +10,7 @@ class HillClimber:
     def solve(self, problem: HidatoSearchProblem, random_restart_chance=0.1):
         current_state = problem.init_random_state()
         current_loss = problem.get_loss(current_state)
-
         while current_loss > THRESHOLD:
-
             neighbor = problem.get_random_neighbor()
             neighbor_loss = problem.get_loss(neighbor)
 

@@ -56,6 +56,7 @@ def _solve_hill_climbing(width, height, grid):
     problem.display()
     solver = HillClimber()
     solver.solve(problem)
+    problem.display()
 
 
 def main():
