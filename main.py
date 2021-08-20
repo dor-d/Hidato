@@ -16,9 +16,7 @@ DEFAULT_DIMENSION = 14
 @timeit
 def generate_hidato(width, height, alpha):
     print(f'Solving a {width} x {height} Hidato...\n')
-
-    gen = HidatoGenerator()
-    grid = gen.generate_grid(width, height, alpha=0.5)
+    grid = _generate_hidato_grid(height, width, alpha)
     print(grid)
     return grid
 
@@ -29,6 +27,12 @@ def generate_hidato(width, height, alpha):
     # sys.stdout.flush()
     #
     # return hidato
+
+
+def _generate_hidato_grid(height, width, alpha):
+    gen = HidatoGenerator()
+    grid = gen.generate_grid(width, height, alpha)
+    return grid
 
 
 @timeit
@@ -48,7 +52,7 @@ def benchmark(width, height, grid):
     time_without_fc = _solve_csp(hidato, select_variable="MRV", order_values="LCV", forward_checking=False)
 
 
-def hill_climbing(width, height, grid):
+def _solve_hill_climbing(width, height, grid):
     problem = HidatoSearchProblem(5, 5, grid)
     solver = HillClimber()
     solver.solve(problem)
@@ -69,7 +73,7 @@ def main():
     if args.benchmark:
         benchmark(width, height, grid)
     if args.hill_climbing:
-        hill_climbing(width, height, grid)
+        _solve_hill_climbing(width, height, grid)
     else:
         _solve_csp(width, height, grid, select_variable="MRV", order_values="LCV", forward_checking=False)
 
