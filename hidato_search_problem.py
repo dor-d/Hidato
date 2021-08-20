@@ -33,8 +33,19 @@ class HidatoSearchProblem:
 
     def get_random_neighbor(self):
         neighbor = np.copy(self.grid)
-        i, j = np.random.choice(self._get_unfixed_cells(), 2)
-        neighbor[i], neighbor[j] = self.grid[j], self.grid[i]
+
+        unfixed_cells = self._get_unfixed_cells()
+        number_of_rows = unfixed_cells.shape[0]
+        random_indices = np.random.choice(number_of_rows, size=2, replace=False)
+        random_rows = unfixed_cells[random_indices, :]
+
+        x_i, y_i = random_rows[0]
+        x_j, y_j = random_rows[1]
+
+        temp = neighbor[y_i, x_i]
+        neighbor[y_i, x_i] = neighbor[y_j, x_j]
+        neighbor[y_j, x_j] = temp
+
         return neighbor
 
     def set_current_state(self, state):
