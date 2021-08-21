@@ -9,17 +9,15 @@ THRESHOLD = 3
 
 class HillClimber:
 
-    def solve(self, problem: HidatoSearchProblem, random_restart_chance=0.1, success_threshold=0.25):
+    def solve(self, problem: HidatoSearchProblem, random_restart_chance=0.0005, success_threshold=0.25):
         current_state = problem.init_random_state()
-        current_loss = problem.get_loss(current_state)
+        current_loss = problem.value(current_state)
 
         loss = []
 
-        while current_loss > problem.size * success_threshold:
-            if len(loss) > 0 and len(loss) % 1000 == 0:
-                self.plot_loss(np.array(loss) / problem.size)
+        for i in range(50000):
             neighbor = problem.get_random_neighbor()
-            neighbor_loss = problem.get_loss(neighbor)
+            neighbor_loss = problem.value(neighbor)
 
             if current_loss > neighbor_loss:
                 problem.set_current_state(neighbor)
@@ -28,9 +26,11 @@ class HillClimber:
 
             elif self._should_do_random_restart(random_restart_chance):
                 current_state = problem.init_random_state()
-                current_loss = problem.get_loss(current_state)
+                current_loss = problem.value(current_state)
                 loss.append(current_loss)
 
+        self.plot_loss(np.array(loss) / problem.size)
+        print(current_loss)
         return problem
 
     def plot_loss(self, loss):

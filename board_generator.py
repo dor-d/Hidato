@@ -1,10 +1,8 @@
 import subprocess
 import os
 
-import anneal
 import random
 
-from hidato_search_problem import HidatoSearchProblem
 from hidato_csp import *
 
 
