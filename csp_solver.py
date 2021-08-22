@@ -1,14 +1,11 @@
 import random
 
-from csp import CSP
-from ac3 import ac3
-
 MINIMUM_REMAINING_VALUES = "MRV"
 LEAST_CONSTRAINING_VALUE = "LCV"
 
 
 class CSPSolver:
-    def __init__(self, problem: CSP):
+    def __init__(self, problem):
         self.problem = problem
 
     def solve(self, select_variable, order_values, forward_checking):
@@ -37,7 +34,7 @@ class CSPSolver:
                 else:
                     arcs = [(variable - 1, variable), (variable + 1, variable)]
 
-                if not ac3(self.problem, arcs):
+                if not self.ac3(arcs):
                     self.problem.delete_assignment(variable)
                     continue
 
@@ -72,3 +69,45 @@ class CSPSolver:
 
     def _least_constraining_value(self, variable):
         return sorted(self.problem.get_constraints(variable), key=self.num_constraints, reverse=True)
+
+    def ac3(self, arcs):
+        queue = arcs.copy()
+
+        while queue:
+            x, y = queue.pop(0)
+
+            if self.revise(x, y):
+                if len(self.problem.get_domain(x)) == 0:
+                    # inconsistency was found
+                    return False
+
+                neighbors = set()
+                for arc in arcs:
+                    if arc[0] == x and arc[1] != y:
+                        neighbors.add((arc[1], x))
+                    elif arc[1] == x and arc[0] != y:
+                        neighbors.add((arc[0], x))
+
+                queue.extend(neighbors)
+
+        return True
+
+    def revise(self, a, b):
+        constraint_func = self.problem.get_binary_constraints(a, b)
+
+        a_domain = self.problem.get_domain(a).copy()
+        b_domain = self.problem.get_domain(b).copy()
+
+        revised = False
+
+        for a_value in a_domain:
+            satisfies = False
+            for b_value in b_domain:
+                if constraint_func(a_value, b_value):
+                    satisfies = True
+
+            if not satisfies:
+                self.problem.get_domain(a).remove(a_value)
+                revised = True
+
+        return revised

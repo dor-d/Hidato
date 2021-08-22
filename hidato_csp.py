@@ -1,20 +1,13 @@
-from csp import CSP
-
-EMPTY = -1
+from utils import EMPTY
 
 
-class HidatoCSP(CSP):
+class HidatoCSP:
     def __init__(self, width, height, grid):
         self.width = width
         self.height = height
         self.size = len(grid)
         self.grid = grid
-        self.original_grid = grid.copy()
         self.domains = {}
-        self._update()
-
-    def reset(self):
-        self.grid = self.original_grid.copy()
         self._update()
 
     def get_variables(self):
@@ -129,7 +122,8 @@ class HidatoCSP(CSP):
     def is_correct(self):
         return self.is_complete() and self.is_consistent()
 
-    def _are_attached(self, x1, y1, x2, y2):
+    @staticmethod
+    def _are_attached(x1, y1, x2, y2):
         return abs(x1 - x2) <= 1 and abs(y1 - y2) <= 1 and (x1 != x2 or y1 != y2)
 
     def empty_neighbors(self, x, y):

@@ -1,10 +1,9 @@
 import numpy as np
 
-EMPTY = -1
+from utils import EMPTY
 
 
 class HidatoSearchProblem:
-
     def __init__(self, width, height, grid):
         self.shape = (width, height)
         self.size = len(grid)
@@ -84,3 +83,25 @@ class HidatoSearchProblem:
                     row.append('%2d|' % self.grid[x, y])
             print((''.join(row)))
         print((''.join(['+'] + ['--+' for _ in range(self.shape[1])])))
+
+    def is_complete(self):
+        return EMPTY not in self.grid
+
+    def is_consistent(self):
+        prev_x, prev_y = self._get_index_in_state(self.grid, 1)
+
+        for x in range(self.shape[0]):
+            for y in range(self.shape[1]):
+                if not self._are_attached(x, y, prev_x, prev_y):
+                    return False
+
+                prev_x, prev_y = x, y
+
+        return True
+
+    @staticmethod
+    def _are_attached(x1, y1, x2, y2):
+        return abs(x1 - x2) <= 1 and abs(y1 - y2) <= 1 and (x1 != x2 or y1 != y2)
+
+    def is_correct(self):
+        return self.is_complete() and self.is_consistent()
