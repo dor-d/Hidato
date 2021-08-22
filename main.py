@@ -5,6 +5,8 @@ import time
 from collections import defaultdict
 
 import numpy as np
+import pandas as pd
+from matplotlib import pyplot as plt
 
 from board_generator import HidatoGenerator
 from csp_solver import CSPSolver
@@ -50,18 +52,25 @@ def benchmark(width, height, alpha):
     for i in range(BENCHMARK_ITERATIONS):
         grid = generate_hidato(width, height, alpha)
 
-        for select_var, order_values, fc in itertools.product(select_variables_options, order_values_options, forward_checking):
+        for select_var, order_values, fc in itertools.product(select_variables_options, order_values_options,
+                                                              forward_checking):
             start = time.time()
             _solve_csp(width, height, grid, select_var, order_values, fc, False)
             time_since = _time_since(start)
-
+            # df = pd.DataFrame({'heuristics': (select_var, order_values, fc), 'runtime': time_since})
             results[(select_var, order_values, fc)].append(time_since)
 
     for key in results.keys():
         results[key] = np.average(results[key])
 
-    print(results)
+    # print(results)
+    plot_results(results)
 
+def plot_results(results):
+    keys = [' & '.join([str(elem) for elem in k]) for k in results.keys()]
+    df = pd.DataFrame({'heuristics': keys, 'runtime': list(results.values())})
+    df.to_csv('csp_runtimes.csv')
+    print(df)
 
 
 def main():
