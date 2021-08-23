@@ -65,7 +65,7 @@ def benchmark(width, height, alpha):
 
 
 def plot_results(results):
-    df = pd.DataFrame(results, columns=["select_var", "order_values", "fc", "iteration", "time"])
+    df = pd.DataFrame(results, columns=["select_var", "order_values", "fc", "iteration", "time", "backtracking_steps"])
     df.to_csv('csp_runtimes.csv')
 
 
