@@ -148,3 +148,7 @@ class HidatoCSP:
         else:
             arcs = [(variable - 1, variable), (variable + 1, variable)]
         return arcs
+
+    def get(self, x, y):
+        i = self._1d_index(x, y)
+        return self.grid[i]

@@ -13,6 +13,7 @@ from hidato_csp import HidatoCSP
 from hidato_search_problem import HidatoSearchProblem
 from hill_climber import HillClimber
 from utils import _time_since
+from gui import HidatoUI, Tk
 
 DEFAULT_ALPHA = 0.5
 DEFAULT_DIMENSION = 5
@@ -33,6 +34,11 @@ def _solve_csp(width, height, grid, select_variable, order_values, forward_check
 
     solver = CSPSolver(problem)
     solver.solve(select_variable, order_values, forward_checking)
+
+    root = Tk()
+    HidatoUI(root, problem, width)
+    root.mainloop()
+
     return problem, solver._num_of_iterations
 
 
@@ -77,7 +83,6 @@ def benchmark(width, height, alpha):
 def export_results_to_csv(results):
     df = pd.DataFrame(results, columns=["heuristic", "running time", "backtracking_steps"])
     df.to_csv('csp_runtimes.csv')
-
 
 def main():
     args = parse_args()
