@@ -57,20 +57,18 @@ def benchmark(width, height, alpha):
             start = time.time()
             _solve_csp(width, height, grid, select_var, order_values, fc, False)
             time_since = _time_since(start)
-            # df = pd.DataFrame({'heuristics': (select_var, order_values, fc), 'runtime': time_since})
             results[(select_var, order_values, fc)].append(time_since)
 
     for key in results.keys():
         results[key] = np.average(results[key])
 
-    # print(results)
     plot_results(results)
+
 
 def plot_results(results):
     keys = [' & '.join([str(elem) for elem in k]) for k in results.keys()]
     df = pd.DataFrame({'heuristics': keys, 'runtime': list(results.values())})
     df.to_csv('csp_runtimes.csv')
-    print(df)
 
 
 def main():
