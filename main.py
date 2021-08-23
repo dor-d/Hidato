@@ -2,18 +2,17 @@ import argparse
 import itertools
 import sys
 import time
-from collections import defaultdict
+import random
 
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
 
 from board_generator import HidatoGenerator
 from csp_solver import CSPSolver
 from hidato_csp import HidatoCSP
 from hidato_search_problem import HidatoSearchProblem
 from hill_climber import HillClimber
-from utils import timeit, _time_since
+from utils import _time_since
 
 DEFAULT_ALPHA = 0.5
 DEFAULT_DIMENSION = 5
@@ -48,29 +47,39 @@ def benchmark(width, height, alpha):
     order_values_options = ["Random", "LCV"]
     forward_checking = [True, False]
 
-
     results = []
-    for i in range(BENCHMARK_ITERATIONS):
-        grid = generate_hidato(width, height, alpha)
+    grid = generate_hidato(width, height, alpha)
 
-        for select_var, order_values, fc in itertools.product(select_variables_options, order_values_options,
-                                                              forward_checking):
+    for select_var, order_values, fc in itertools.product(select_variables_options, order_values_options,
+                                                          forward_checking):
+        key = f"{select_var} & {order_values} & {fc}"
+
+        running_time = []
+        backtracking_steps = []
+        for i in range(BENCHMARK_ITERATIONS):
             start = time.time()
-            _, num_of_backtracking = _solve_csp(width, height, grid, select_var, order_values, fc, False)
+            _, num_of_backtracking = _solve_csp(width, height, grid.copy(), select_var, order_values, fc, False)
             time_since = _time_since(start)
+            running_time.append(time_since)
+            backtracking_steps.append(num_of_backtracking)
 
-            results.append((select_var, order_values, fc, i, time_since, num_of_backtracking))
+        running_time = np.average(running_time)
+        num_of_backtracking = np.average(backtracking_steps)
+
+        results.append((key, running_time, num_of_backtracking))
+
 
     plot_results(results)
 
 
 def plot_results(results):
-    df = pd.DataFrame(results, columns=["select_var", "order_values", "fc", "iteration", "time", "backtracking_steps"])
+    df = pd.DataFrame(results, columns=["heuristic", "running time", "backtracking_steps"])
     df.to_csv('csp_runtimes.csv')
 
 
 def main():
     args = parse_args()
+    random.seed(42)
 
     width = height = args.dimension
 

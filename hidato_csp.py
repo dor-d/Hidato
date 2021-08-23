@@ -36,18 +36,16 @@ class HidatoCSP:
         if self.is_assigned(x):
             return {self._2d_index(x)}
 
-        if x == 1 and self.is_assigned(2):
+        elif x == 1 and self.is_assigned(2):
             return self._neighbors_of(2) & self.empty_cells
 
-        if 1 < x < self.size:
+        elif x == self.size and self.is_assigned(x - 1):
+            return self._neighbors_of(x - 1) & self.empty_cells
+
+        else:
             return (self._neighbors_of(x - 1) if self.is_assigned(x - 1) else self.empty_cells) \
                    & (self._neighbors_of(x + 1) if self.is_assigned(x + 1) else self.empty_cells) \
                    & self.empty_cells
-
-        if x == self.size and self.is_assigned(x - 1):
-            return self._neighbors_of(x - 1) & self.empty_cells
-
-        return ()
 
     def _neighbors_of(self, variable):
         if not self.is_assigned(variable):
@@ -141,3 +139,12 @@ class HidatoCSP:
                     row.append('%2d|' % self.grid[i])
             print((''.join(row)))
         print((''.join(['+'] + ['--+' for _ in range(self.width)])))
+
+    def get_arcs(self, variable):
+        if variable == 1:
+            arcs = [(2, 1)]
+        elif variable == self.size:
+            arcs = [(self.size - 1, variable)]
+        else:
+            arcs = [(variable - 1, variable), (variable + 1, variable)]
+        return arcs

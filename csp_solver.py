@@ -19,23 +19,23 @@ class CSPSolver:
             order_values_func = self._least_constraining_value
 
         self._num_of_iterations = 0
-        return self._recursive_backtracking(select_variable_func, order_values_func, forward_checking)
+        result = self._recursive_backtracking(select_variable_func, order_values_func, forward_checking)
+        if self._num_of_iterations == 0:
+            self.problem.display()
+            print(select_variable, order_values, forward_checking)
+        return result
 
     def _recursive_backtracking(self, select_variable_func, order_values_func, forward_checking):
-        self._num_of_iterations += 1
         if self.problem.is_complete():
             return self.problem
 
         variable = select_variable_func()
         for value in order_values_func(variable):
+            self._num_of_iterations += 1
+
             self.problem.assign(variable, value)
             if forward_checking:
-                if variable == 1:
-                    arcs = [(2, 1)]
-                elif variable == self.problem.size:
-                    arcs = [(self.problem.size - 1, variable)]
-                else:
-                    arcs = [(variable - 1, variable), (variable + 1, variable)]
+                arcs = self.problem.get_arcs(variable)
 
                 if not self.ac3(arcs):
                     self.problem.delete_assignment(variable)
@@ -46,7 +46,7 @@ class CSPSolver:
                 return self.problem
             self.problem.delete_assignment(variable)
 
-        return None
+        return
 
     def _variable_by_order(self):
         return min(var for var in self.problem.get_variables() if not self.problem.is_assigned(var))
