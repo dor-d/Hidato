@@ -17,6 +17,7 @@ from utils import _time_since
 DEFAULT_ALPHA = 0.5
 DEFAULT_DIMENSION = 5
 BENCHMARK_ITERATIONS = 10
+MICROSECS_IN_SECS = 1e6
 THE_FUNNY_NUMBER = 42
 
 
@@ -64,8 +65,8 @@ def benchmark(width, height, alpha):
             running_time.append(time_since)
             backtracking_steps.append(num_of_backtracking)
 
-        running_time = np.average(running_time)
-        num_of_backtracking = np.average(backtracking_steps)
+        running_time = int(np.average(running_time) * MICROSECS_IN_SECS)
+        num_of_backtracking = int(np.average(backtracking_steps))
 
         results.append((key, running_time, num_of_backtracking))
 
