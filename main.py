@@ -17,6 +17,7 @@ from utils import _time_since
 DEFAULT_ALPHA = 0.5
 DEFAULT_DIMENSION = 5
 BENCHMARK_ITERATIONS = 10
+THE_FUNNY_NUMBER = 42
 
 
 def generate_hidato(width, height, alpha):
@@ -79,7 +80,7 @@ def export_results_to_csv(results):
 
 def main():
     args = parse_args()
-    random.seed(42)
+    random.seed(THE_FUNNY_NUMBER)
 
     width = height = args.dimension
 
