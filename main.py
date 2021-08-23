@@ -29,9 +29,10 @@ def _solve_csp(width, height, grid, select_variable, order_values, forward_check
     problem = HidatoCSP(width, height, grid)
     if display:
         problem.display()
+
     solver = CSPSolver(problem)
     solver.solve(select_variable, order_values, forward_checking)
-    return problem
+    return problem, solver._num_of_iterations
 
 
 def _solve_hill_climbing(width, height, grid):
@@ -47,27 +48,24 @@ def benchmark(width, height, alpha):
     order_values_options = ["Random", "LCV"]
     forward_checking = [True, False]
 
-    results = defaultdict(list)
 
+    results = []
     for i in range(BENCHMARK_ITERATIONS):
         grid = generate_hidato(width, height, alpha)
 
         for select_var, order_values, fc in itertools.product(select_variables_options, order_values_options,
                                                               forward_checking):
             start = time.time()
-            _solve_csp(width, height, grid, select_var, order_values, fc, False)
+            _, num_of_backtracking = _solve_csp(width, height, grid, select_var, order_values, fc, False)
             time_since = _time_since(start)
-            results[(select_var, order_values, fc)].append(time_since)
 
-    for key in results.keys():
-        results[key] = np.average(results[key])
+            results.append((select_var, order_values, fc, i, time_since, num_of_backtracking))
 
     plot_results(results)
 
 
 def plot_results(results):
-    keys = [' & '.join([str(elem) for elem in k]) for k in results.keys()]
-    df = pd.DataFrame({'heuristics': keys, 'runtime': list(results.values())})
+    df = pd.DataFrame(results, columns=["select_var", "order_values", "fc", "iteration", "time"])
     df.to_csv('csp_runtimes.csv')
 
 

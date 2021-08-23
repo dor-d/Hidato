@@ -7,6 +7,7 @@ LEAST_CONSTRAINING_VALUE = "LCV"
 class CSPSolver:
     def __init__(self, problem):
         self.problem = problem
+        self._num_of_iterations = 0
 
     def solve(self, select_variable, order_values, forward_checking):
         select_variable_func = self._variable_by_order
@@ -17,9 +18,11 @@ class CSPSolver:
         if order_values == LEAST_CONSTRAINING_VALUE:
             order_values_func = self._least_constraining_value
 
+        self._num_of_iterations = 0
         return self._recursive_backtracking(select_variable_func, order_values_func, forward_checking)
 
     def _recursive_backtracking(self, select_variable_func, order_values_func, forward_checking):
+        self._num_of_iterations += 1
         if self.problem.is_complete():
             return self.problem
 
@@ -42,6 +45,7 @@ class CSPSolver:
             if result is not None:
                 return self.problem
             self.problem.delete_assignment(variable)
+
         return None
 
     def _variable_by_order(self):
