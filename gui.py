@@ -95,5 +95,6 @@ class HidatoUI(Frame):
     def delete_from_cell(self, x, y):
         self.canvas.delete(self._tag(x, y))
 
-    def _tag(self, x, y):
+    @staticmethod
+    def _tag(x, y):
         return f'({x, y})'
