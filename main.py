@@ -61,10 +61,10 @@ def benchmark(width, height, alpha):
 
             results.append((select_var, order_values, fc, i, time_since, num_of_backtracking))
 
-    plot_results(results)
+    export_results_to_csv(results)
 
 
-def plot_results(results):
+def export_results_to_csv(results):
     df = pd.DataFrame(results, columns=["select_var", "order_values", "fc", "iteration", "time", "backtracking_steps"])
     df.to_csv('csp_runtimes.csv')
 
