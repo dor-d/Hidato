@@ -32,12 +32,12 @@ def _solve_csp(width, height, grid, select_variable, order_values, forward_check
     if display:
         problem.display()
 
+    root = Tk()
+    gui = HidatoUI(root, problem, width)
+
     solver = CSPSolver(problem)
     solver.solve(select_variable, order_values, forward_checking)
-
-    root = Tk()
-    HidatoUI(root, problem, width)
-    root.mainloop()
+    gui.make_moves(problem.moves)
 
     return problem, solver._num_of_iterations
 
@@ -76,13 +76,13 @@ def benchmark(width, height, alpha):
 
         results.append((key, running_time, num_of_backtracking))
 
-
     export_results_to_csv(results)
 
 
 def export_results_to_csv(results):
     df = pd.DataFrame(results, columns=["heuristic", "running time", "backtracking_steps"])
     df.to_csv('csp_runtimes.csv')
+
 
 def main():
     args = parse_args()

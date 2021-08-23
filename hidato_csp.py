@@ -1,4 +1,8 @@
 from utils import EMPTY
+from collections import namedtuple
+
+
+Move = namedtuple('Move', ['index', 'number'])
 
 
 class HidatoCSP:
@@ -9,6 +13,7 @@ class HidatoCSP:
         self.grid = grid
         self.domains = {}
         self._update()
+        self.moves = []
 
     def get_variables(self):
         return range(1, self.size + 1)
@@ -89,11 +94,13 @@ class HidatoCSP:
             raise ValueError(f"Index {value} already assigned to a variable.")
         self.grid[index] = x
         self._update()
+        self.moves.append(Move(index, x))
 
     def delete_assignment(self, variable):
         index = self._1d_index_of(variable)
         self.grid[index] = EMPTY
         self._update()
+        self.moves.append(Move(index, EMPTY))
 
     def _update(self):
         self._update_empty_cells()

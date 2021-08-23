@@ -4,6 +4,7 @@ MINIMUM_REMAINING_VALUES = "MRV"
 LEAST_CONSTRAINING_VALUE = "LCV"
 
 
+
 class CSPSolver:
     def __init__(self, problem):
         self.problem = problem
