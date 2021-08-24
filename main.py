@@ -37,7 +37,7 @@ def _solve_csp(width, height, grid, select_variable, order_values, forward_check
 
     solver = CSPSolver(problem)
     solver.solve(select_variable, order_values, forward_checking)
-    gui.make_changes(problem.moves)
+    gui.show_solve_steps(problem.moves)
 
     return problem, solver._num_of_iterations
 
@@ -52,7 +52,7 @@ def _solve_hill_climbing(width, height, grid):
     solver = HillClimber()
     solver.solve(problem)
 
-    gui.make_changes(problem.moves)
+    gui.show_solve_steps(problem.moves)
 
     return problem
 
