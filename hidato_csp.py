@@ -1,8 +1,4 @@
-from utils import EMPTY
-from collections import namedtuple
-
-
-Move = namedtuple('Move', ['index', 'number'])
+from utils import EMPTY, Move
 
 
 class HidatoCSP:
@@ -94,13 +90,13 @@ class HidatoCSP:
             raise ValueError(f"Index {value} already assigned to a variable.")
         self.grid[index] = x
         self._update()
-        self.moves.append(Move(index, x))
+        self.moves.append(Move(*reversed(value), x))
 
     def delete_assignment(self, variable):
         index = self._1d_index_of(variable)
         self.grid[index] = EMPTY
         self._update()
-        self.moves.append(Move(index, EMPTY))
+        self.moves.append(Move(*reversed(self._1d_to_2d_index(index)), EMPTY))
 
     def _update(self):
         self._update_empty_cells()

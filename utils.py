@@ -1,7 +1,10 @@
 import time
-
+from collections import namedtuple
 EMPTY = -1
 
+Move = namedtuple('Move', ['x_pos', 'y_pos', 'number'])
+Swap = namedtuple('Swap', ['swap_moves_list'])
+Board = namedtuple('Board', ['grid'])
 
 def timeit(func):
     def timed_func(*args, **kwargs):

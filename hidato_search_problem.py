@@ -1,6 +1,11 @@
 import numpy as np
 
-from utils import EMPTY
+from utils import EMPTY, Board, Move, Swap
+
+NUM_OF_MOVES_IN_SWAP = 4
+
+
+# Swap = namedtuple('Swap', ['first', 'second'])
 
 
 class HidatoSearchProblem:
@@ -9,6 +14,7 @@ class HidatoSearchProblem:
         self.size = len(grid)
         self.grid = np.array(grid).reshape(self.shape)
         self.fixed_cells = self.grid != EMPTY
+        self.moves = []
 
     def init_random_state(self):
         indices = self._get_unfixed_cells()
@@ -19,6 +25,7 @@ class HidatoSearchProblem:
                 x, y = indices.pop(0)
                 self.grid[x, y] = i
 
+        self.moves.append(Board(self.grid))
         return self.grid
 
     def _get_unfixed_cells(self):
@@ -44,6 +51,9 @@ class HidatoSearchProblem:
         temp = neighbor[y_i, x_i]
         neighbor[y_i, x_i] = neighbor[y_j, x_j]
         neighbor[y_j, x_j] = temp
+
+        # self.moves.append(Swap((x_i, y_i), (x_j, y_j)))
+        self._add_swap_moves(x_i, y_i, x_j, y_j)
 
         return neighbor
 
@@ -105,3 +115,31 @@ class HidatoSearchProblem:
 
     def is_correct(self):
         return self.is_complete() and self.is_consistent()
+
+    def remove_last_move(self):
+        self.moves.pop(-1)
+
+    def get(self, x, y):
+        return self.grid[x, y]
+
+    def _add_swap_moves(self, x1, y1, x2, y2):
+        first_number = self.get(x1, y1)
+        second_number = self.get(x2, y2)
+        self.moves.append(
+            Swap(swap_moves_list=[
+                Move(x1, y1, EMPTY),
+                Move(x2, y2, EMPTY),
+                Move(x1, y1, second_number),
+                Move(x2, y2, first_number)
+            ])
+        )
+
+    def pop_swap_from_moves(self):
+        """
+        Use to pop last moves added by a previous call to _add_swap_moves.
+        :return:
+        """
+        if len(self.moves) > 0 and isinstance(self.moves[-1], Swap):
+            self.moves.pop(-1)
+        else:
+            raise RuntimeWarning('Tried to pop swap with no swap in moves.')
