@@ -1,3 +1,4 @@
+from hidato_problem import HidatoProblem
 from utils import EMPTY
 from collections import namedtuple
 
@@ -5,12 +6,9 @@ from collections import namedtuple
 Move = namedtuple('Move', ['index', 'number'])
 
 
-class HidatoCSP:
+class HidatoCSP(HidatoProblem):
     def __init__(self, width, height, grid):
-        self.width = width
-        self.height = height
-        self.size = len(grid)
-        self.grid = grid
+        super().__init__(width, height, grid)
         self.domains = {}
         self._update()
         self.moves = []
@@ -109,43 +107,8 @@ class HidatoCSP:
     def _update_empty_cells(self):
         self.empty_cells = {self._1d_to_2d_index(i) for i in range(self.size) if self.grid[i] == EMPTY}
 
-    def is_assigned(self, x):
-        return x in self.grid
-
-    def is_complete(self):
-        return EMPTY not in self.grid
-
-    def is_consistent(self):
-        prev_x, prev_y = self._2d_index(1)
-        for i in range(2, self.size + 1):
-            x, y = self._2d_index(i)
-            if not self._are_attached(x, y, prev_x, prev_y):
-                return False
-            prev_x, prev_y = x, y
-        return True
-
-    def is_correct(self):
-        return self.is_complete() and self.is_consistent()
-
-    @staticmethod
-    def _are_attached(x1, y1, x2, y2):
-        return abs(x1 - x2) <= 1 and abs(y1 - y2) <= 1 and (x1 != x2 or y1 != y2)
-
     def empty_neighbors(self, x, y):
         return self._neighbors_of_index(x, y) & self.empty_cells
-
-    def display(self):
-        for y in range(self.height):
-            print((''.join(['+'] + ['--+' for _ in range(self.width)])))
-            row = ['|']
-            for x in range(self.width):
-                i = y * self.width + x
-                if self.grid[i] == -1:
-                    row.append('* |')
-                else:
-                    row.append('%2d|' % self.grid[i])
-            print((''.join(row)))
-        print((''.join(['+'] + ['--+' for _ in range(self.width)])))
 
     def get_arcs(self, variable):
         if variable == 1:

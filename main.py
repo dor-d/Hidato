@@ -13,7 +13,8 @@ from hidato_csp import HidatoCSP
 from hidato_search_problem import HidatoSearchProblem
 from hill_climber import HillClimber
 from utils import _time_since
-from gui import HidatoUI, Tk
+from gui import HidatoUI
+from tkinter import Tk
 
 DEFAULT_ALPHA = 0.5
 DEFAULT_DIMENSION = 5
@@ -98,7 +99,7 @@ def main():
     grid = generate_hidato(width, height, args.alpha)
 
     if args.hill_climbing:
-        problem, _ = _solve_hill_climbing(width, height, grid)
+        problem = _solve_hill_climbing(width, height, grid)
     elif args.csp:
         problem, _ = _solve_csp(width, height, grid, select_variable="MRV", order_values="LCV", forward_checking=False)
 

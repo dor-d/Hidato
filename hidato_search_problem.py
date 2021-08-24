@@ -1,13 +1,13 @@
 import numpy as np
 
+from hidato_problem import HidatoProblem
 from utils import EMPTY
 
 
-class HidatoSearchProblem:
+class HidatoSearchProblem(HidatoProblem):
     def __init__(self, width, height, grid):
-        self.shape = (width, height)
-        self.size = len(grid)
-        self.grid = np.array(grid).reshape(self.shape)
+        super().__init__(width, height, grid)
+        self.grid = np.array(grid).reshape(self.width, self.height)
         self.fixed_cells = self.grid != EMPTY
 
     def init_random_state(self):
@@ -56,7 +56,7 @@ class HidatoSearchProblem:
         prev_index = self._get_index_in_state(state, 1)
         for i in range(2, self.size + 1):
             current_index = self._get_index_in_state(state, i)
-            if not self._is_attached(prev_index, current_index):
+            if not self._are_attached(*prev_index, *current_index):
                 loss += 1
 
             prev_index = current_index
@@ -67,41 +67,8 @@ class HidatoSearchProblem:
     def _get_index_in_state(state, x):
         return tuple(np.argwhere(state == x)[0])
 
-    @staticmethod
-    def _is_attached(a_index, b_index):
-        return abs(a_index[0] - b_index[0]) <= 1 and abs(a_index[1] - b_index[1]) <= 1 and a_index != b_index
+    def _2d_index(self, variable):
+        return self._get_index_in_state(self.grid, variable)
 
-    def display(self):
-        for x in range(self.shape[0]):
-            print((''.join(['+'] + ['--+' for _ in range(self.shape[1])])))
-            row = ['|']
-            for y in range(self.shape[1]):
-                # i = y * self.shape[1] + x
-                if self.grid[x, y] == EMPTY:
-                    row.append('* |')
-                else:
-                    row.append('%2d|' % self.grid[x, y])
-            print((''.join(row)))
-        print((''.join(['+'] + ['--+' for _ in range(self.shape[1])])))
-
-    def is_complete(self):
-        return EMPTY not in self.grid
-
-    def is_consistent(self):
-        prev_x, prev_y = self._get_index_in_state(self.grid, 1)
-
-        for x in range(self.shape[0]):
-            for y in range(self.shape[1]):
-                if not self._are_attached(x, y, prev_x, prev_y):
-                    return False
-
-                prev_x, prev_y = x, y
-
-        return True
-
-    @staticmethod
-    def _are_attached(x1, y1, x2, y2):
-        return abs(x1 - x2) <= 1 and abs(y1 - y2) <= 1 and (x1 != x2 or y1 != y2)
-
-    def is_correct(self):
-        return self.is_complete() and self.is_consistent()
+    def get(self, x, y):
+        return self.grid[x, y]

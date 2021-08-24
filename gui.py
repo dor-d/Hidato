@@ -1,7 +1,8 @@
-from tkinter import Canvas, Frame, BOTH, TOP, Tk
+import time
+from tkinter import Canvas, Frame, BOTH, TOP
+
 from hidato_csp import Move
 from utils import EMPTY
-import time
 
 MARGIN = 20  # Pixels around the board
 SIDE = 50  # Width of every board cell.
@@ -25,11 +26,11 @@ class HidatoUI(Frame):
         self.colors = []
         color_start = 94
         color_end = 255
-        step = int((color_end - color_start) / self.dim**2)
+        step = int((color_end - color_start) / self.dim ** 2)
         other_color = 0
 
         current_color = color_start
-        for i in range(1, self.dim**2 + 1):
+        for i in range(1, self.dim ** 2 + 1):
             self.colors.append(self._from_rgb(other_color, current_color, other_color))
             current_color += step
             other_color += step
@@ -42,8 +43,6 @@ class HidatoUI(Frame):
         """
         # r, g, b = num >> 16, (num >> 8) & 0xFF, num & 0xFF
         return f'#{r:02x}{g:02x}{b:02x}'
-
-
 
     def __initUI(self):
         self.parent.title("Hidato")
@@ -90,10 +89,12 @@ class HidatoUI(Frame):
         return MARGIN + j * SIDE
 
     def fill_cell(self, number, color, x, y):
-        z=self.canvas.create_text(
+        z = self.canvas.create_text(
             x + SIDE / 2, y + SIDE / 2, text=number, tags=["numbers", self._tag(x, y)], fill=color
         )
-        r = self.canvas.create_rectangle(x, y, x + SIDE, y + SIDE, fill=self.colors[number - 1],
+
+        bg_color = self.colors[number - 1] if self.problem.is_variable_consistent(number) else "red"
+        r = self.canvas.create_rectangle(x, y, x + SIDE, y + SIDE, fill=bg_color,
                                          tags=[self._tag(x, y)])
 
         self.canvas.tag_lower(r, z)
