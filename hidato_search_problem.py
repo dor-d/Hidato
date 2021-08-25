@@ -45,14 +45,13 @@ class HidatoSearchProblem:
         random_indices = np.random.choice(number_of_rows, size=2, replace=False)
         random_rows = unfixed_cells[random_indices, :]
 
-        x_i, y_i = random_rows[0]
-        x_j, y_j = random_rows[1]
+        y_i, x_i = random_rows[0]
+        y_j, x_j = random_rows[1]
 
-        temp = neighbor[y_i, x_i]
-        neighbor[y_i, x_i] = neighbor[y_j, x_j]
-        neighbor[y_j, x_j] = temp
+        temp = neighbor[x_i, y_i]
+        neighbor[x_i, y_i] = neighbor[x_j, y_j]
+        neighbor[x_j, y_j] = temp
 
-        # self.moves.append(Swap((x_i, y_i), (x_j, y_j)))
         self._add_swap_moves(x_i, y_i, x_j, y_j)
 
         return neighbor
