@@ -38,7 +38,7 @@ def _solve_csp(width, height, grid, select_variable, order_values, forward_check
 
     solver = CSPSolver(problem)
     solver.solve(select_variable, order_values, forward_checking)
-    gui.make_moves(problem.moves)
+    gui.show_solve_steps(problem.moves)
 
     return problem, solver._num_of_iterations
 
@@ -46,8 +46,15 @@ def _solve_csp(width, height, grid, select_variable, order_values, forward_check
 def _solve_hill_climbing(width, height, grid):
     problem = HidatoSearchProblem(width, height, grid)
     problem.display()
+
+    root = Tk()
+    gui = HidatoUI(root, problem, width)
+
     solver = HillClimber()
     solver.solve(problem)
+
+    gui.show_solve_steps(problem.moves)
+
     return problem
 
 
@@ -101,7 +108,7 @@ def main():
     if args.hill_climbing:
         problem = _solve_hill_climbing(width, height, grid)
     elif args.csp:
-        problem, _ = _solve_csp(width, height, grid, select_variable="MRV", order_values="LCV", forward_checking=False)
+        problem = _solve_csp(width, height, grid, select_variable="MRV", order_values="LCV", forward_checking=False)
 
     print("\nAfter solve:")
     sys.stdout.flush()

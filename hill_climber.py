@@ -11,7 +11,7 @@ class HillClimber:
 
     def solve(self, problem: HidatoSearchProblem, max_iterations=None, random_restart_chance=0.005):
         if max_iterations is None:
-            max_iterations = ceil(problem.size**0.5 * 5000)
+            max_iterations = ceil(problem.size ** 0.5 * 5000)
 
         current_state = problem.init_random_state()
         current_loss = problem.get_loss(current_state)
@@ -23,7 +23,10 @@ class HillClimber:
             neighbor = problem.get_random_neighbor()
             neighbor_loss = problem.get_loss(neighbor)
 
-            if current_loss > neighbor_loss:
+            if current_loss <= neighbor_loss:
+                problem.pop_swap_from_moves()
+
+            elif current_loss > neighbor_loss:
                 problem.set_current_state(neighbor)
                 current_loss = neighbor_loss
 

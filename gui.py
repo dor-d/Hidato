@@ -1,12 +1,15 @@
-import time
-from tkinter import Canvas, Frame, BOTH, TOP
+import math
+from tkinter import Canvas, Frame, BOTH, TOP, Tk
 
-from hidato_csp import Move
-from utils import EMPTY
+from utils import EMPTY, Move, Board, Swap
+import time
 
 MARGIN = 20  # Pixels around the board
 SIDE = 50  # Width of every board cell.
-STEP_TIME = 0.3
+START_WAIT_SECONDS = 3
+STEP_WAIT_SECONDS = 0.8
+END_WAIT_SECONDS = 15
+NUM_DELETE_MOVES_IN_SWAP = 2
 
 
 class HidatoUI(Frame):
@@ -57,7 +60,7 @@ class HidatoUI(Frame):
 
     def __draw_grid(self):
         """
-        Draws grid divided with blue lines into 3x3 squares
+        Draws grid divided with black lines into dimxdim squares.
         """
         for i in range(self.dim + 1):
             color = "gray"
@@ -80,46 +83,99 @@ class HidatoUI(Frame):
             for j in range(self.dim):
                 number = self.problem.get(i, j)
                 if number != EMPTY:
-                    x = self.get_gui_position(j)
-                    y = self.get_gui_position(i)
-                    self.fill_cell(number, 'black', x, y)
+                    self.__fill_cell(i, j, number, 'black')
 
     @staticmethod
-    def get_gui_position(j):
+    def _get_gui_position(j):
         return MARGIN + j * SIDE
 
-    def fill_cell(self, number, color, x, y):
+    def __fill_cell(self, i, j, number, color='black', bg_color=None):
+        x = self._get_gui_position(i)
+        y = self._get_gui_position(j)
+
         z = self.canvas.create_text(
             x + SIDE / 2, y + SIDE / 2, text=number, tags=["numbers", self._tag(x, y)], fill=color
         )
 
-        bg_color = self.colors[number - 1] if self.problem.is_variable_consistent(number) else "red"
+        if bg_color is None:
+            bg_color = self.colors[number - 1] if self.problem.is_variable_consistent(number) else "red"
+
         r = self.canvas.create_rectangle(x, y, x + SIDE, y + SIDE, fill=bg_color,
-                                         tags=[self._tag(x, y)])
+                                         tags=['numbers']
+                                         )
 
         self.canvas.tag_lower(r, z)
 
-    def make_moves(self, moves):
-        for move in moves:
-            self.make_move(move)
-            self.update_parent()
-            time.sleep(STEP_TIME)
+    def show_solve_steps(self, steps):
+        self.__update_gui_and_wait(START_WAIT_SECONDS)
+        for step in steps:
+            if isinstance(step, Move):
+                self._make_move(step)
+            elif isinstance(step, Swap):
+                self._make_swap(step)
+            elif isinstance(step, Board):
+                self._make_board(step)
 
-    def update_parent(self):
+            self.__update_gui_and_wait(STEP_WAIT_SECONDS)
+        self.__wait(END_WAIT_SECONDS)
+
+    def _make_move(self, move: Move):
+        if move.number == EMPTY:
+            self._delete_from_cell(move.x_pos, move.y_pos)
+        else:
+            self.__fill_cell(*move, 'black')
+
+    def _delete_from_cell(self, x, y):
+        self.canvas.delete(self._tag(x, y))
+
+    def _make_swap(self, change):
+        """
+         Used to make several consecutive moves without updating gui to give the appearance of a swap.
+        :param change:
+        :return:
+        """
+        # change color of swapped cells
+        for move in change.swap_moves_list[:NUM_DELETE_MOVES_IN_SWAP]:
+            self.__change_bg_color(move.x_pos, move.y_pos, bg_color='gold')
+        self.__update_gui_and_wait(STEP_WAIT_SECONDS)
+
+        # delete swapped cells
+        for move in change.swap_moves_list[:NUM_DELETE_MOVES_IN_SWAP]:
+            self._make_move(move)
+        self.__update_gui_and_wait(STEP_WAIT_SECONDS / math.pi)
+
+        # fill swapped cells
+        for move in change.swap_moves_list[NUM_DELETE_MOVES_IN_SWAP:]:
+            self._make_move(move)
+        # for move in change.swap_moves_list[NUM_DELETE_MOVES_IN_SWAP:]:
+        #     self.__change_bg_color(move.x_pos, move.y_pos, bg_color='gold')
+        # self.__update_gui_and_wait(STEP_WAIT_SECONDS)
+        # for move in change.swap_moves_list[NUM_DELETE_MOVES_IN_SWAP:]:
+        #     self.__change_bg_color(move.x_pos, move.y_pos, bg_color=None)
+
+    def __change_bg_color(self, x, y, bg_color):
+        number = self.problem.get(x, y)
+        self.__fill_cell(x, y, number, bg_color=bg_color)
+
+    def _make_board(self, board: Board):
+        self.canvas.delete("numbers")
+        for i in range(self.dim):
+            for j in range(self.dim):
+                number = board.grid[i, j]
+                if number != EMPTY:
+                    self.__fill_cell(i, j, number, 'black')
+
+    def __update_gui_and_wait(self, wait_duration):
+        self.__update_gui()
+        self.__wait(wait_duration)
+
+    def __update_gui(self):
         self.parent.update_idletasks()
         self.parent.update()
 
-    def make_move(self, move: Move):
-        i, j = move.index // self.dim, move.index % self.dim
-        x = self.get_gui_position(j)
-        y = self.get_gui_position(i)
-        if move.number == EMPTY:
-            self.delete_from_cell(x, y)
-        else:
-            self.fill_cell(move.number, 'black', x, y)
-
-    def delete_from_cell(self, x, y):
-        self.canvas.delete(self._tag(x, y))
+    @staticmethod
+    def __wait(duration):
+        return time.sleep(duration)
 
     @staticmethod
     def _tag(x, y):
