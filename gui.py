@@ -110,16 +110,16 @@ class HidatoUI(Frame):
         self.__update_gui_and_wait(START_WAIT_SECONDS)
         for step in steps:
             if isinstance(step, Move):
-                self._make_move(step)
+                self.__show_move(step)
             elif isinstance(step, Swap):
-                self._make_swap(step)
+                self.__show_swap(step)
             elif isinstance(step, Board):
-                self._make_board(step)
+                self.__show_board(step)
 
             self.__update_gui_and_wait(STEP_WAIT_SECONDS)
         self.__wait(END_WAIT_SECONDS)
 
-    def _make_move(self, move: Move):
+    def __show_move(self, move: Move):
         if move.number == EMPTY:
             self._delete_from_cell(move.x_pos, move.y_pos)
         else:
@@ -128,7 +128,7 @@ class HidatoUI(Frame):
     def _delete_from_cell(self, x, y):
         self.canvas.delete(self._tag(x, y))
 
-    def _make_swap(self, change):
+    def __show_swap(self, change):
         """
          Used to make several consecutive moves without updating gui to give the appearance of a swap.
         :param change:
@@ -141,12 +141,12 @@ class HidatoUI(Frame):
 
         # delete swapped cells
         for move in change.swap_moves_list[:NUM_DELETE_MOVES_IN_SWAP]:
-            self._make_move(move)
+            self.__show_move(move)
         self.__update_gui_and_wait(STEP_WAIT_SECONDS / math.pi)
 
         # fill swapped cells
         for move in change.swap_moves_list[NUM_DELETE_MOVES_IN_SWAP:]:
-            self._make_move(move)
+            self.__show_move(move)
         # for move in change.swap_moves_list[NUM_DELETE_MOVES_IN_SWAP:]:
         #     self.__change_bg_color(move.x_pos, move.y_pos, bg_color='gold')
         # self.__update_gui_and_wait(STEP_WAIT_SECONDS)
@@ -157,7 +157,7 @@ class HidatoUI(Frame):
         number = self.problem.get(x, y)
         self.__fill_cell(x, y, number, bg_color=bg_color)
 
-    def _make_board(self, board: Board):
+    def __show_board(self, board: Board):
         self.canvas.delete("numbers")
         for i in range(self.dim):
             for j in range(self.dim):

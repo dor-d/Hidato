@@ -108,7 +108,7 @@ def main():
     if args.hill_climbing:
         problem = _solve_hill_climbing(width, height, grid)
     elif args.csp:
-        problem = _solve_csp(width, height, grid, select_variable="MRV", order_values="LCV", forward_checking=False)
+        problem, _ = _solve_csp(width, height, grid, select_variable="MRV", order_values="LCV", forward_checking=False)
 
     print("\nAfter solve:")
     sys.stdout.flush()
