@@ -26,7 +26,7 @@ class HidatoUI(Frame):
 
     def __init__(self, problem: HidatoProblem, dim):
         self.problem = problem
-        self.__view_grid = np.copy(problem.board.grid)
+        self.__view_board = problem.board.copy()
         self.parent = Tk()
         Frame.__init__(self, self.parent)
         self.dim = dim
@@ -71,7 +71,7 @@ class HidatoUI(Frame):
         self.canvas.delete("numbers")
         for i in range(self.dim):
             for j in range(self.dim):
-                number = self.problem.board.get(i, j)
+                number = self.__view_board[i, j]
                 if number != EMPTY:
                     self.__fill_cell(i, j, number)
 
@@ -82,9 +82,10 @@ class HidatoUI(Frame):
     def __fill_cell(self, i, j, number, text_color='black', bg_color=None):
         x, y = self.__get_2d_gui_position(i, j)
 
+        self.__view_board[i, j] = number
+
         self.__create_grid_cell(x, y, number, text_color, bg_color)
 
-        self.__view_grid[i, j] = number
 
     def __get_2d_gui_position(self, i, j):
         y = self._get_gui_position(i)
@@ -107,8 +108,7 @@ class HidatoUI(Frame):
         return z
 
     def __choose_bg_color(self, number):
-        # TODO: Check consistency on current grid, not on problem
-        return self.__get_color_for(number) if self.problem.board._is_variable_consistent(number) else "red"
+        return self.__get_color_for(number) if self.__view_board.is_variable_consistent(number) else "red"
 
     def __get_color_for(self, number):
         rgb = self.__get_rgb_color_for(number)
@@ -154,7 +154,7 @@ class HidatoUI(Frame):
     def __delete_from_cell(self, i, j):
         x, y = self.__get_2d_gui_position(i, j)
         self.canvas.delete(self._tag(x, y))
-        self.__view_grid[i, j] = EMPTY
+        self.__view_board[i, j] = EMPTY
 
     def __show_swap(self, swap):
         """
@@ -171,8 +171,8 @@ class HidatoUI(Frame):
         self.__flash_cell(*second_cell)
         self.__update_gui_and_wait(STEP_WAIT_SECONDS)
 
-        first_number = self.__view_grid[first_cell]
-        second_number = self.__view_grid[second_cell]
+        first_number = self.__view_board[first_cell]
+        second_number = self.__view_board[second_cell]
 
         # fill swapped cells
         self.__set_cell(*first_cell, second_number)
@@ -187,9 +187,9 @@ class HidatoUI(Frame):
         self.__update_gui_and_wait(STEP_WAIT_SECONDS / math.pi)
         self.__change_bg_color(i, j, bg_color=None)
 
-    def __change_bg_color(self, x, y, bg_color):
-        number = self.problem.board.get(x, y)
-        self.__fill_cell(x, y, number, bg_color=bg_color)
+    def __change_bg_color(self, i, j, bg_color):
+        number = self.__view_board[i, j]
+        self.__fill_cell(i, j, number, bg_color=bg_color)
 
     def __show_board(self, board: Board):
         self.canvas.delete("numbers")
