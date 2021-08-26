@@ -107,10 +107,15 @@ class HidatoUI(Frame):
 
     def __create_grid_cell(self, x, y, number, text_color, bg_color):
         z = self.__create_text(x, y, number, text_color)
+
         if bg_color is None:
-            bg_color = self.colors[number - 1] if self.problem.is_variable_consistent(number) else "red"
+            bg_color = self.__choose_bg_color(number)
+
         r = self.__create_rectangle(x, y, bg_color)
         self.canvas.tag_lower(r, z)
+
+    def __choose_bg_color(self, number):
+        return self.colors[number - 1] if self.problem.is_variable_consistent(number) else "red"
 
     def __create_text(self, x, y, number, color):
         z = self.canvas.create_text(
