@@ -87,28 +87,42 @@ class HidatoUI(Frame):
             for j in range(self.dim):
                 number = self.problem.get(i, j)
                 if number != EMPTY:
-                    self.__fill_cell(i, j, number, 'black')
+                    self.__fill_cell(i, j, number)
 
     @staticmethod
     def _get_gui_position(j):
         return MARGIN + j * SIDE
 
-    def __fill_cell(self, i, j, number, color='black', bg_color=None):
+    def __fill_cell(self, i, j, number, text_color='black', bg_color=None):
+        x, y = self.__get_2d_gui_position(i, j)
+
+        self.__create_grid_cell(x, y, number, text_color, bg_color)
+
+        self.__view_grid[i, j] = number
+
+    def __get_2d_gui_position(self, i, j):
         x = self._get_gui_position(i)
         y = self._get_gui_position(j)
+        return x, y
 
+    def __create_grid_cell(self, x, y, number, text_color, bg_color):
+        z = self.__create_text(x, y, number, text_color)
+        if bg_color is None:
+            bg_color = self.colors[number - 1] if self.problem.is_variable_consistent(number) else "red"
+        r = self.__create_rectangle(x, y, bg_color)
+        self.canvas.tag_lower(r, z)
+
+    def __create_text(self, x, y, number, color):
         z = self.canvas.create_text(
             x + SIDE / 2, y + SIDE / 2, text=number, tags=["numbers", self._tag(x, y)], fill=color
         )
+        return z
 
-        if bg_color is None:
-            bg_color = self.colors[number - 1] if self.problem.is_variable_consistent(number) else "red"
-
+    def __create_rectangle(self, x, y, bg_color):
         r = self.canvas.create_rectangle(x, y, x + SIDE, y + SIDE, fill=bg_color,
                                          tags=['numbers']
                                          )
-
-        self.canvas.tag_lower(r, z)
+        return r
 
     def show_solve_steps(self, steps):
         self.__update_gui_and_wait(START_WAIT_SECONDS)
@@ -131,6 +145,7 @@ class HidatoUI(Frame):
 
     def _delete_from_cell(self, x, y):
         self.canvas.delete(self._tag(x, y))
+        self.__view_grid[x, y] = EMPTY
 
     def __show_swap(self, change):
         """
