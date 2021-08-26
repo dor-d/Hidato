@@ -14,6 +14,7 @@ MARGIN = 20  # Pixels around the board
 SIDE = 50  # Width of every board cell.
 START_WAIT_SECONDS = 3
 STEP_WAIT_SECONDS = 0.3
+SHORT_STEP_WAIT_SECONDS = STEP_WAIT_SECONDS / math.pi
 END_WAIT_SECONDS = 15
 NUM_DELETE_MOVES_IN_SWAP = 2
 
@@ -162,9 +163,11 @@ class HidatoUI(Frame):
     def __show_move(self, move: Move):
         if move.number == EMPTY:
             self.__delete_from_cell(move.x_pos, move.y_pos)
+            self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
             self.__refresh_neighbors_bg_color(move.x_pos, move.y_pos)
         else:
             self.__fill_cell(*move)
+            self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
             self.__refresh_neighbors_bg_color(move.x_pos, move.y_pos)
 
     def __delete_from_cell(self, i, j):
@@ -195,11 +198,12 @@ class HidatoUI(Frame):
     def __set_cell(self, i, j, number):
         self.__delete_from_cell(i, j)
         self.__fill_cell(i, j, number)
+        self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
         self.__refresh_neighbors_bg_color(i, j)
 
     def __flash_cell(self, i, j):
         self.__light_cell(i, j)
-        self.__update_gui_and_wait(STEP_WAIT_SECONDS / math.pi)
+        self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
         self.__refresh_cell_bg_color(i, j)
 
     def __refresh_cell_bg_color(self, i, j):
@@ -231,10 +235,10 @@ class HidatoUI(Frame):
     def __walking_flash_animation(self):
         for i, j in self.__all_coordinates():
             self.__flash_cell(i, j)
-        self.__update_gui_and_wait(STEP_WAIT_SECONDS / math.pi)
+        self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
         for i, j in reversed(self.__all_coordinates()):
             self.__flash_cell(i, j)
-        self.__update_gui_and_wait(STEP_WAIT_SECONDS / math.pi)
+        self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
 
     def __flashing_animation(self):
         self.__flash_all_even_cells()
@@ -259,12 +263,12 @@ class HidatoUI(Frame):
     def __refresh_cells_bg_color(self, cells):
         for cell in cells:
             self.__refresh_cell_bg_color(*cell)
-        self.__update_gui_and_wait(STEP_WAIT_SECONDS / math.pi)
+        self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
 
     def __light_cells(self, cells):
         for cell in cells:
             self.__light_cell(*cell)
-        self.__update_gui_and_wait(STEP_WAIT_SECONDS / math.pi)
+        self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
 
     def __all_coordinates(self):
         return [(i, j) for i in range(self.dim) for j in range(self.dim)]
