@@ -14,7 +14,6 @@ from hidato_search_problem import HidatoSearchProblem
 from hill_climber import HillClimber
 from utils import _time_since
 from gui import HidatoUI
-from tkinter import Tk
 
 DEFAULT_ALPHA = 0.5
 DEFAULT_DIMENSION = 5
@@ -51,7 +50,7 @@ def _solve_hill_climbing(width, height, grid):
     solver = HillClimber()
     solver.solve(problem)
 
-    gui.show_solve_steps(problem.moves)
+    # gui.show_solve_steps(problem.moves)
 
     return problem
 
@@ -113,9 +112,9 @@ def main():
     problem.display()
     is_correct = problem.is_correct()
     print(f"Solution is {'correct' if is_correct else 'incorrect'}.")
-    # if not is_correct:
-    #     loss = problem.get_loss(problem.grid)
-    #     print(f"There are {loss} errors.")
+    if not is_correct:
+        loss = problem.get_loss(problem.board)
+        print(f"There are {loss} errors.")
 
 
 def parse_args():

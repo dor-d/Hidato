@@ -13,7 +13,8 @@ class HillClimber:
         if max_iterations is None:
             max_iterations = ceil(problem.size ** 0.5 * 5000)
 
-        current_state = problem.init_random_state()
+        current_state = problem.get_random_state()
+        problem.set_current_state(current_state)
         current_loss = problem.get_loss(current_state)
 
         best_state = None
@@ -24,19 +25,24 @@ class HillClimber:
             neighbor_loss = problem.get_loss(neighbor)
 
             if current_loss <= neighbor_loss:
-                problem.pop_swap_from_moves()
+                problem.undo_last_move()
 
                 if self._should_do_random_restart(random_restart_chance):
-                    current_state = problem.init_random_state()
-                    current_loss = problem.get_loss(current_state)
+                    random_state = problem.get_random_state()
+                    random_state_loss = problem.get_loss(random_state)
 
-            elif current_loss > neighbor_loss:
+                    if random_state_loss < current_loss:
+                        problem.set_current_state(random_state)
+                        current_state, current_loss = random_state, random_state_loss
+                    else:
+                        problem.undo_last_move()
+
+            elif neighbor_loss < current_loss:
                 problem.set_current_state(neighbor)
-                current_loss = neighbor_loss
+                current_state, current_loss = neighbor, neighbor_loss
 
             if best_state is None or current_loss < best_loss:
-                best_loss = current_loss
-                best_state = current_state
+                best_loss, best_state = current_loss, current_state
 
         problem.set_current_state(best_state)
 

@@ -13,18 +13,18 @@ class HidatoSearchProblem(HidatoProblem):
         self.fixed_cells = self.board.grid != EMPTY
         self.moves = []
 
-    def init_random_state(self):
+    def get_random_state(self):
         indices = self._get_unfixed_cells()
         indices = list(np.random.permutation(indices))
         fixed_numbers = self._get_fixed_numbers()
+        random_state = self.board.copy()
         for i in range(1, self.width * self.height + 1):
             if i not in fixed_numbers:
-                y, x = indices.pop(0)
-                self.board.grid[y, x] = i
+                random_state[tuple(indices.pop(0))] = i
 
-        self.moves.append(Board(self.width, self.height, self.board.grid))
+        self.moves.append(Board(self.width, self.height, random_state.grid))
 
-        return Board(self.width, self.height, self.board.grid)
+        return random_state
 
     def _get_unfixed_cells(self):
         return np.argwhere(self.fixed_cells == False)
@@ -70,12 +70,12 @@ class HidatoSearchProblem(HidatoProblem):
     def remove_last_move(self):
         self.moves.pop(-1)
 
-    def pop_swap_from_moves(self):
+    def undo_last_move(self):
         """
         Use to pop last moves added by a previous call to _add_swap_moves.
         :return:
         """
-        if len(self.moves) > 0 and isinstance(self.moves[-1], Swap):
+        if len(self.moves) > 0:
             self.moves.pop(-1)
         else:
-            raise RuntimeWarning('Tried to pop swap with no swap in moves.')
+            raise RuntimeWarning('Tried to undo move with no moves made.')
