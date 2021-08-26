@@ -2,6 +2,7 @@ import math
 from tkinter import Canvas, Frame, BOTH, TOP, Tk
 
 import numpy as np
+from matplotlib import cm
 
 from hidato_problem import HidatoProblem
 from utils import EMPTY, Move, Board, Swap
@@ -13,6 +14,8 @@ START_WAIT_SECONDS = 3
 STEP_WAIT_SECONDS = 0.8
 END_WAIT_SECONDS = 15
 NUM_DELETE_MOVES_IN_SWAP = 2
+
+COLORMAP = cm.get_cmap('Greens')
 
 
 class HidatoUI(Frame):
@@ -30,26 +33,21 @@ class HidatoUI(Frame):
 
         self.row, self.col = -1, -1
 
-        self.colors = []
-        color_start = 94
-        color_end = 255
-        step = int((color_end - color_start) / self.dim ** 2)
-        other_color = 0
+        # self.colors = []
+        # color_start = 94
+        # color_end = 255
+        # step = int((color_end - color_start) / self.dim ** 2)
+        # other_color = 0
 
-        current_color = color_start
-        for i in range(1, self.dim ** 2 + 1):
-            self.colors.append(self._from_rgb(other_color, current_color, other_color))
-            current_color += step
-            other_color += step
+        # current_color = color_start
+        # for i in range(1, self.dim ** 2 + 1):
+        #     self.colors.append(self._from_rgb(other_color, current_color, other_color))
+        #     current_color += step
+        #     other_color += step
 
         self.__initUI()
 
-    @staticmethod
-    def _from_rgb(r, g, b):
-        """translates an rgb tuple of int to a tkinter friendly color code
-        """
-        # r, g, b = num >> 16, (num >> 8) & 0xFF, num & 0xFF
-        return f'#{r:02x}{g:02x}{b:02x}'
+
 
     def __initUI(self):
         self.parent.title("Hidato")
@@ -121,7 +119,25 @@ class HidatoUI(Frame):
         return z
 
     def __choose_bg_color(self, number):
-        return self.colors[number - 1] if self.problem.is_variable_consistent(number) else "red"
+        # TODO: Check consistency on current grid, not on problem
+        return self.__get_color_for(number) if self.problem.is_variable_consistent(number) else "red"
+
+    def __get_color_for(self, number):
+        rgb = self.__get_rgb_color_for(number)
+        return self._from_rgb(*rgb)
+
+    def __get_rgb_color_for(self, number):
+        step = 1.0 / self.dim ** 2
+        rgb = COLORMAP(number * step)[:-1]
+        return [int(255 * val) for val in rgb]
+
+    @staticmethod
+    def _from_rgb(r, g, b):
+        """translates an rgb tuple of int to a tkinter friendly color code
+        """
+        # r, g, b = num >> 16, (num >> 8) & 0xFF, num & 0xFF
+        return f'#{r:02x}{g:02x}{b:02x}'
+
 
     def __create_rectangle(self, x, y, bg_color):
         r = self.canvas.create_rectangle(x, y, x + SIDE, y + SIDE, fill=bg_color,
