@@ -23,6 +23,7 @@ class HidatoSearchProblem(HidatoProblem):
                 self.board.grid[y, x] = i
 
         self.moves.append(Board(self.width, self.height, self.board.grid))
+
         return Board(self.width, self.height, self.board.grid)
 
     def _get_unfixed_cells(self):

@@ -37,6 +37,9 @@ class Board:
     def get(self, x, y):
         return self.grid[x, y]
 
+    def set(self, x, y, number):
+        self.grid[x, y] = number
+
     def _2d_index(self, variable):
         return np.argwhere(self.grid == variable)[0]
 
@@ -61,7 +64,7 @@ class Board:
         x, y = self._2d_index(variable)
         return self._neighbors_of_index(x, y)
 
-    def _is_variable_consistent(self, variable):
+    def is_variable_consistent(self, variable):
         is_not_consistent = True
         x_0, y_0 = self._2d_index(variable)
 
@@ -79,6 +82,12 @@ class Board:
             is_not_consistent = self._are_attached(x_0, y_0, x_i, y_i) and self._are_attached(x_0, y_0, x_j, y_j)
 
         return is_not_consistent
+
+    def __getitem__(self, index_2d):
+        return self.grid[index_2d]
+
+    def __setitem__(self, index_2d, number):
+        self.grid[index_2d] = number
 
     @staticmethod
     def _are_attached(x1, y1, x2, y2):
@@ -116,3 +125,6 @@ class Board:
 
     def empty_neighbors(self, x, y):
         return self._neighbors_of_index(x, y) & self.empty_cells
+
+    def copy(self):
+        return Board(self.width, self.height, self.grid.copy())

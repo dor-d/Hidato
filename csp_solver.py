@@ -1,4 +1,5 @@
 import random
+import sys
 
 MINIMUM_REMAINING_VALUES = "MRV"
 LEAST_CONSTRAINING_VALUE = "LCV"
@@ -34,17 +35,22 @@ class CSPSolver:
         for value in order_values_func(variable):
             self._num_of_iterations += 1
 
+            print(f'assigning {variable}')
             self.problem.assign(variable, value)
             if forward_checking:
                 arcs = self.problem.get_arcs(variable)
 
                 if not self.ac3(arcs):
+                    print(f'deleting {variable}')
+                    sys.stdout.flush()
                     self.problem.delete_assignment(variable)
                     continue
 
             result = self._recursive_backtracking(select_variable_func, order_values_func, forward_checking)
             if result is not None:
                 return self.problem
+            print(f'deleting {variable}')
+            sys.stdout.flush()
             self.problem.delete_assignment(variable)
 
         return
