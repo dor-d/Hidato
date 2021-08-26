@@ -1,6 +1,9 @@
 import math
 from tkinter import Canvas, Frame, BOTH, TOP, Tk
 
+import numpy as np
+
+from hidato_problem import HidatoProblem
 from utils import EMPTY, Move, Board, Swap
 import time
 
@@ -17,8 +20,9 @@ class HidatoUI(Frame):
     The Tkinter UI, responsible for drawing the board and accepting user input.
     """
 
-    def __init__(self, parent, problem, dim):
+    def __init__(self, parent, problem: HidatoProblem, dim):
         self.problem = problem
+        self.__view_grid = np.array(problem.grid).reshape(problem.height, problem.width)
         Frame.__init__(self, parent)
         self.parent = parent
         self.dim = dim

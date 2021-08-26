@@ -9,7 +9,7 @@ NUM_OF_MOVES_IN_SWAP = 4
 class HidatoSearchProblem(HidatoProblem):
     def __init__(self, width, height, grid):
         super().__init__(width, height, grid)
-        self.grid = np.array(grid).reshape(self.width, self.height)
+        self.grid = np.array(grid).reshape(self.height, self.width)
         self.fixed_cells = self.grid != EMPTY
         self.moves = []
 
@@ -106,3 +106,4 @@ class HidatoSearchProblem(HidatoProblem):
             self.moves.pop(-1)
         else:
             raise RuntimeWarning('Tried to pop swap with no swap in moves.')
+
