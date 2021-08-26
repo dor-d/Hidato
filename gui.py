@@ -181,7 +181,7 @@ class HidatoUI(Frame):
         self.__fill_cell(i, j, number)
 
     def __flash_cell(self, i, j):
-        self.__change_bg_color(i, j, bg_color='gold')
+        self.__change_bg_color(i, j, bg_color='DarkGoldenrod1')
         self.__update_gui_and_wait(STEP_WAIT_SECONDS / math.pi)
         self.__change_bg_color(i, j, bg_color=None)
 
