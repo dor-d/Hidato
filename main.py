@@ -33,8 +33,7 @@ def _solve_csp(width, height, grid, select_variable, order_values, forward_check
     if display:
         problem.display()
 
-    root = Tk()
-    gui = HidatoUI(root, problem, width)
+    gui = HidatoUI(problem, width)
 
     solver = CSPSolver(problem)
     solver.solve(select_variable, order_values, forward_checking)
@@ -47,8 +46,7 @@ def _solve_hill_climbing(width, height, grid):
     problem = HidatoSearchProblem(width, height, grid)
     problem.display()
 
-    root = Tk()
-    gui = HidatoUI(root, problem, width)
+    gui = HidatoUI(problem, width)
 
     solver = HillClimber()
     solver.solve(problem)

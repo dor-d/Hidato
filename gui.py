@@ -20,11 +20,11 @@ class HidatoUI(Frame):
     The Tkinter UI, responsible for drawing the board and accepting user input.
     """
 
-    def __init__(self, parent, problem: HidatoProblem, dim):
+    def __init__(self, problem: HidatoProblem, dim):
         self.problem = problem
         self.__view_grid = np.array(problem.grid).reshape(problem.height, problem.width)
-        Frame.__init__(self, parent)
-        self.parent = parent
+        self.parent = Tk()
+        Frame.__init__(self, self.parent)
         self.dim = dim
         self.size = MARGIN * 2 + SIDE * dim
 
