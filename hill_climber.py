@@ -26,13 +26,13 @@ class HillClimber:
             if current_loss <= neighbor_loss:
                 problem.pop_swap_from_moves()
 
+                if self._should_do_random_restart(random_restart_chance):
+                    current_state = problem.init_random_state()
+                    current_loss = problem.get_loss(current_state)
+
             elif current_loss > neighbor_loss:
                 problem.set_current_state(neighbor)
                 current_loss = neighbor_loss
-
-            elif self._should_do_random_restart(random_restart_chance):
-                current_state = problem.init_random_state()
-                current_loss = problem.get_loss(current_state)
 
             if best_state is None or current_loss < best_loss:
                 best_loss = current_loss

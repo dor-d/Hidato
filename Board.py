@@ -40,8 +40,15 @@ class Board:
     def set(self, x, y, number):
         self.grid[x, y] = number
 
-    def _is_in_grid(self, x, y):
-        return 0 <= x < self.height and 0 <= y < self.width
+    def _neighbors_of(self, variable):
+        if not self.is_assigned(variable):
+            raise ValueError(f"The variable {variable} is not assigned.")
+
+        x, y = self._2d_index(variable)
+        return self._neighbors_of_index(x, y)
+
+    def _neighbors_of_index(self, x, y):
+        return {(i, j) for i, j in self._surrounding_indices(x, y) if self._is_in_grid(i, j)}
 
     @staticmethod
     def _surrounding_indices(x, y):
@@ -51,34 +58,13 @@ class Board:
             for j in range(-1, 2)
         }
 
-    def _neighbors_of_index(self, x, y):
-        return {(i, j) for i, j in self._surrounding_indices(x, y) if self._is_in_grid(i, j)}
-
-    def _neighbors_of(self, variable):
-        if not self.is_assigned(variable):
-            raise ValueError(f"The variable {variable} is not assigned.")
-
-        x, y = self._2d_index(variable)
-        return self._neighbors_of_index(x, y)
+    def _is_in_grid(self, x, y):
+        return 0 <= x < self.height and 0 <= y < self.width
 
     def is_variable_consistent(self, variable):
-        is_not_consistent = True
-        x_0, y_0 = self._2d_index(variable)
-
-        if variable == 1 and self.is_assigned(2):
-            x_i, y_i = self._2d_index(2)
-            is_not_consistent = self._are_attached(x_0, y_0, x_i, y_i)
-
-        elif variable == self.size and self.is_assigned(variable - 1):
-            x_i, y_i = self._2d_index(self.size - 1)
-            is_not_consistent = self._are_attached(x_0, y_0, x_i, y_i)
-
-        elif self.is_assigned(variable - 1) and self.is_assigned(variable + 1):
-            x_i, y_i = self._2d_index(variable + 1)
-            x_j, y_j = self._2d_index(variable - 1)
-            is_not_consistent = self._are_attached(x_0, y_0, x_i, y_i) and self._are_attached(x_0, y_0, x_j, y_j)
-
-        return is_not_consistent
+        neighbor_indices = self._neighbors_of(variable)
+        neighbor_numbers = [self.grid[x, y] for x, y in neighbor_indices]
+        return variable - 1 in neighbor_numbers or variable + 1 in neighbor_numbers
 
     def __getitem__(self, index_2d):
         return self.grid[index_2d]

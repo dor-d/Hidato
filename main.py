@@ -113,9 +113,9 @@ def main():
     problem.display()
     is_correct = problem.is_correct()
     print(f"Solution is {'correct' if is_correct else 'incorrect'}.")
-    if not is_correct:
-        loss = problem.get_loss(problem.grid)
-        print(f"There are {loss} errors.")
+    # if not is_correct:
+    #     loss = problem.get_loss(problem.grid)
+    #     print(f"There are {loss} errors.")
 
 
 def parse_args():
