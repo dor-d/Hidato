@@ -33,21 +33,7 @@ class HidatoUI(Frame):
 
         self.row, self.col = -1, -1
 
-        # self.colors = []
-        # color_start = 94
-        # color_end = 255
-        # step = int((color_end - color_start) / self.dim ** 2)
-        # other_color = 0
-
-        # current_color = color_start
-        # for i in range(1, self.dim ** 2 + 1):
-        #     self.colors.append(self._from_rgb(other_color, current_color, other_color))
-        #     current_color += step
-        #     other_color += step
-
         self.__initUI()
-
-
 
     def __initUI(self):
         self.parent.title("Hidato")
@@ -137,7 +123,6 @@ class HidatoUI(Frame):
         """
         # r, g, b = num >> 16, (num >> 8) & 0xFF, num & 0xFF
         return f'#{r:02x}{g:02x}{b:02x}'
-
 
     def __create_rectangle(self, x, y, bg_color):
         r = self.canvas.create_rectangle(x, y, x + SIDE, y + SIDE, fill=bg_color,
