@@ -120,7 +120,7 @@ class HidatoUI(Frame):
 
     def __create_rectangle(self, x, y, bg_color):
         r = self.canvas.create_rectangle(x, y, x + SIDE, y + SIDE, fill=bg_color,
-                                         tags=['numbers']
+                                         tags=['numbers', self._tag(x, y)]
                                          )
         return r
 
@@ -139,33 +139,42 @@ class HidatoUI(Frame):
 
     def __show_move(self, move: Move):
         if move.number == EMPTY:
-            self._delete_from_cell(move.x_pos, move.y_pos)
+            self.__delete_from_cell(move.x_pos, move.y_pos)
         else:
             self.__fill_cell(*move, 'black')
 
-    def _delete_from_cell(self, x, y):
+    def __delete_from_cell(self, i, j):
+        x, y = self.__get_2d_gui_position(i, j)
         self.canvas.delete(self._tag(x, y))
-        self.__view_grid[x, y] = EMPTY
+        self.__view_grid[i, j] = EMPTY
 
-    def __show_swap(self, change):
+    def __show_swap(self, swap):
         """
          Used to make several consecutive moves without updating gui to give the appearance of a swap.
         :param change:
         :return:
         """
         # change color of swapped cells
-        for move in change.swap_moves_list[:NUM_DELETE_MOVES_IN_SWAP]:
-            self.__flash_cell(move.x_pos, move.y_pos)
+
+        first_cell = (swap.x_1, swap.y_1)
+        second_cell = (swap.x_2, swap.y_2)
+
+        self.__flash_cell(*first_cell)
+        self.__flash_cell(*second_cell)
         self.__update_gui_and_wait(STEP_WAIT_SECONDS)
 
+        first_number = self.__view_grid[first_cell]
+        second_number = self.__view_grid[second_cell]
+
         # delete swapped cells
-        for move in change.swap_moves_list[:NUM_DELETE_MOVES_IN_SWAP]:
-            self.__show_move(move)
+        self.__delete_from_cell(*first_cell)
+        self.__delete_from_cell(*second_cell)
         self.__update_gui_and_wait(STEP_WAIT_SECONDS / math.pi)
 
         # fill swapped cells
-        for move in change.swap_moves_list[NUM_DELETE_MOVES_IN_SWAP:]:
-            self.__show_move(move)
+        self.__fill_cell(*first_cell, second_number)
+        self.__fill_cell(*second_cell, first_number)
+
         # for move in change.swap_moves_list[NUM_DELETE_MOVES_IN_SWAP:]:
         #     self.__change_bg_color(move.x_pos, move.y_pos, bg_color='gold')
         # self.__update_gui_and_wait(STEP_WAIT_SECONDS)

@@ -49,7 +49,7 @@ class HidatoSearchProblem(HidatoProblem):
         neighbor[x_i, y_i] = neighbor[x_j, y_j]
         neighbor[x_j, y_j] = temp
 
-        self._add_swap_moves(x_i, y_i, x_j, y_j)
+        self.moves.append(Swap(x_i, y_i, x_j, y_j))
 
         return neighbor
 
@@ -85,18 +85,6 @@ class HidatoSearchProblem(HidatoProblem):
     def get(self, x, y):
         return self.grid[x, y]
 
-    def _add_swap_moves(self, x1, y1, x2, y2):
-        first_number = self.get(x1, y1)
-        second_number = self.get(x2, y2)
-        self.moves.append(
-            Swap(swap_moves_list=[
-                Move(x1, y1, EMPTY),
-                Move(x2, y2, EMPTY),
-                Move(x1, y1, second_number),
-                Move(x2, y2, first_number)
-            ])
-        )
-
     def pop_swap_from_moves(self):
         """
         Use to pop last moves added by a previous call to _add_swap_moves.
@@ -106,4 +94,3 @@ class HidatoSearchProblem(HidatoProblem):
             self.moves.pop(-1)
         else:
             raise RuntimeWarning('Tried to pop swap with no swap in moves.')
-
