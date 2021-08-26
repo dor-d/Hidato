@@ -91,13 +91,13 @@ class HidatoCSP(HidatoProblem):
             raise ValueError(f"Index {value} already assigned to a variable.")
         self.grid[index] = x
         self._update()
-        self.moves.append(Move(*reversed(value), x))
+        self.moves.append(Move(*value, x))
 
     def delete_assignment(self, variable):
         index = self._1d_index_of(variable)
         self.grid[index] = EMPTY
         self._update()
-        self.moves.append(Move(*reversed(self._1d_to_2d_index(index)), EMPTY))
+        self.moves.append(Move(*self._1d_to_2d_index(index), EMPTY))
 
     def _update(self):
         self._update_empty_cells()
