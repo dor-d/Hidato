@@ -172,13 +172,13 @@ class HidatoUI(Frame):
         first_number = self.__view_grid[first_cell]
         second_number = self.__view_grid[second_cell]
 
-        # delete swapped cells
-        self.__delete_from_cell(*first_cell)
-        self.__delete_from_cell(*second_cell)
-
         # fill swapped cells
-        self.__fill_cell(*first_cell, second_number)
-        self.__fill_cell(*second_cell, first_number)
+        self.__set_cell(*first_cell, second_number)
+        self.__set_cell(*second_cell, first_number)
+
+    def __set_cell(self, i, j, number):
+        self.__delete_from_cell(i, j)
+        self.__fill_cell(i, j, number)
 
     def __flash_cell(self, i, j):
         self.__change_bg_color(i, j, bg_color='gold')
