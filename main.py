@@ -50,7 +50,7 @@ def _solve_hill_climbing(width, height, grid):
     solver = HillClimber()
     solver.solve(problem)
 
-    # gui.show_solve_steps(problem.moves)
+    gui.show_solve_steps(problem.moves)
 
     return problem
 

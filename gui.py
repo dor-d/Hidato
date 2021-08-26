@@ -25,7 +25,6 @@ FLASH_COLOR = 'DarkGoldenrod1'
 GRID_COLOR = 'gray'
 
 
-
 class HidatoUI(Frame):
     """
     The Tkinter UI, responsible for drawing the board and accepting user input.
@@ -158,6 +157,8 @@ class HidatoUI(Frame):
             self.__update_gui_and_wait(STEP_WAIT_SECONDS)
         if self.problem.is_correct():
             self.__win_animation()
+        else:
+            self.__lose_animation()
         self.__wait(END_WAIT_SECONDS)
 
     def __show_move(self, move: Move):
@@ -201,16 +202,16 @@ class HidatoUI(Frame):
         self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
         self.__refresh_neighbors_bg_color(i, j)
 
-    def __flash_cell(self, i, j):
-        self.__light_cell(i, j)
+    def __flash_cell(self, i, j, color=FLASH_COLOR):
+        self.__light_cell(i, j, color)
         self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
         self.__refresh_cell_bg_color(i, j)
 
     def __refresh_cell_bg_color(self, i, j):
         self.__change_bg_color(i, j, bg_color=None)
 
-    def __light_cell(self, i, j):
-        self.__change_bg_color(i, j, bg_color=FLASH_COLOR)
+    def __light_cell(self, i, j, color=FLASH_COLOR):
+        self.__change_bg_color(i, j, bg_color=color)
 
     def __change_bg_color(self, i, j, bg_color):
         number = self.__view_board[i, j]
@@ -230,7 +231,19 @@ class HidatoUI(Frame):
 
     def __win_animation(self):
         self.__walking_flash_animation()
-        self.__flashing_animation()
+        self.__even_odd_flashing_animation()
+
+    def __lose_animation(self):
+        self.__light_cells(self.__all_coordinates())
+        self.__update_gui_and_wait(STEP_WAIT_SECONDS)
+        for i in range(self.dim):
+            if i % 2 == 0:
+                self.__flash_row_from_left(i)
+            else:
+                self.__flash_row_from_right(i)
+        self.__flash_cells(self.__all_coordinates(), color=ERROR_COLOR)
+        self.__refresh_cells_bg_color(self.__all_coordinates())
+        self.__update_gui_and_wait(STEP_WAIT_SECONDS)
 
     def __walking_flash_animation(self):
         for i, j in self.__all_coordinates():
@@ -240,7 +253,7 @@ class HidatoUI(Frame):
             self.__flash_cell(i, j)
         self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
 
-    def __flashing_animation(self):
+    def __even_odd_flashing_animation(self):
         self.__flash_all_even_cells()
         self.__flash_all_odd_cells()
         self.__flash_all_even_cells()
@@ -256,18 +269,18 @@ class HidatoUI(Frame):
     def __2d_to_1d_index(self, i, j):
         return i * self.dim + j % self.dim
 
-    def __flash_cells(self, cells):
-        self.__light_cells(cells)
+    def __flash_cells(self, cells, color=FLASH_COLOR):
+        self.__light_cells(cells, color=color)
+        self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
         self.__refresh_cells_bg_color(cells)
+
+    def __light_cells(self, cells, color=FLASH_COLOR):
+        for cell in cells:
+            self.__light_cell(*cell, color=color)
 
     def __refresh_cells_bg_color(self, cells):
         for cell in cells:
             self.__refresh_cell_bg_color(*cell)
-        self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
-
-    def __light_cells(self, cells):
-        for cell in cells:
-            self.__light_cell(*cell)
         self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
 
     def __all_coordinates(self):
@@ -280,3 +293,17 @@ class HidatoUI(Frame):
     @staticmethod
     def _tag(x, y):
         return f'({x, y})'
+
+    def __flash_row_from_left(self, i):
+        for j in range(self.dim):
+            self.__light_cell(i, j, color=ERROR_COLOR)
+            self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
+            self.__light_cell(i, j)
+        self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
+
+    def __flash_row_from_right(self, i):
+        for j in range(self.dim - 1, -1, -1):
+            self.__light_cell(i, j, color=ERROR_COLOR)
+            self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
+            self.__light_cell(i, j)
+        self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
