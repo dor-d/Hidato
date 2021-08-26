@@ -236,7 +236,7 @@ class HidatoUI(Frame):
         for i, j in self.__all_coordinates():
             self.__flash_cell(i, j)
         self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
-        for i, j in reversed(self.__all_coordinates()):
+        for i, j in reversed(self.__all_coordinates()[:-1]):
             self.__flash_cell(i, j)
         self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
 
