@@ -57,7 +57,7 @@ class CSPSolver:
         min_value = -1
 
         for x in self.problem.get_variables():
-            if not self.problem.is_assigned(x) and (self.problem.is_assigned(x - 1) or self.problem.is_assigned(x + 1)):
+            if not self.problem.board.is_assigned(x) and (self.problem.board.is_assigned(x - 1) or self.problem.board.is_assigned(x + 1)):
                 value = len(self.problem.get_constraints(x))
                 if min_var is None or value < min_value:
                     min_var = x
@@ -79,9 +79,9 @@ class CSPSolver:
         queue = arcs.copy()
 
         while queue:
-            x, y = queue.pop(0)
+            y, x = queue.pop(0)
 
-            if self.revise(x, y):
+            if self.revise(y, x):
                 if len(self.problem.get_domain(x)) == 0:
                     # inconsistency was found
                     return False

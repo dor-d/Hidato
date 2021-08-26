@@ -5,7 +5,8 @@ import numpy as np
 from matplotlib import cm
 
 from hidato_problem import HidatoProblem
-from utils import EMPTY, Move, Board, Swap
+from utils import EMPTY, Move, Swap
+from Board import Board
 import time
 
 MARGIN = 20  # Pixels around the board
@@ -25,7 +26,7 @@ class HidatoUI(Frame):
 
     def __init__(self, problem: HidatoProblem, dim):
         self.problem = problem
-        self.__view_grid = np.array(problem.grid).reshape(problem.height, problem.width)
+        self.__view_grid = np.copy(problem.board.grid)
         self.parent = Tk()
         Frame.__init__(self, self.parent)
         self.dim = dim
@@ -70,7 +71,7 @@ class HidatoUI(Frame):
         self.canvas.delete("numbers")
         for i in range(self.dim):
             for j in range(self.dim):
-                number = self.problem.get(i, j)
+                number = self.problem.board.get(i, j)
                 if number != EMPTY:
                     self.__fill_cell(i, j, number)
 
@@ -107,7 +108,7 @@ class HidatoUI(Frame):
 
     def __choose_bg_color(self, number):
         # TODO: Check consistency on current grid, not on problem
-        return self.__get_color_for(number) if self.problem.is_variable_consistent(number) else "red"
+        return self.__get_color_for(number) if self.problem.board._is_variable_consistent(number) else "red"
 
     def __get_color_for(self, number):
         rgb = self.__get_rgb_color_for(number)
@@ -187,7 +188,7 @@ class HidatoUI(Frame):
         self.__change_bg_color(i, j, bg_color=None)
 
     def __change_bg_color(self, x, y, bg_color):
-        number = self.problem.get(x, y)
+        number = self.problem.board.get(x, y)
         self.__fill_cell(x, y, number, bg_color=bg_color)
 
     def __show_board(self, board: Board):

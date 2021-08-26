@@ -4,7 +4,7 @@ EMPTY = -1
 
 Move = namedtuple('Move', ['x_pos', 'y_pos', 'number'])
 Swap = namedtuple('Swap', ['x_1', 'y_1', 'x_2', 'y_2'])
-Board = namedtuple('Board', ['grid'])
+
 
 def timeit(func):
     def timed_func(*args, **kwargs):

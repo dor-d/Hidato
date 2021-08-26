@@ -1,7 +1,8 @@
 import numpy as np
 
+from Board import Board
 from hidato_problem import HidatoProblem
-from utils import EMPTY, Board, Move, Swap
+from utils import EMPTY, Swap
 
 NUM_OF_MOVES_IN_SWAP = 4
 
@@ -9,33 +10,32 @@ NUM_OF_MOVES_IN_SWAP = 4
 class HidatoSearchProblem(HidatoProblem):
     def __init__(self, width, height, grid):
         super().__init__(width, height, grid)
-        self.grid = np.array(grid).reshape(self.height, self.width)
-        self.fixed_cells = self.grid != EMPTY
+        self.fixed_cells = self.board.grid != EMPTY
         self.moves = []
 
     def init_random_state(self):
         indices = self._get_unfixed_cells()
         indices = list(np.random.permutation(indices))
         fixed_numbers = self._get_fixed_numbers()
-        for i in range(1, self.size + 1):
+        for i in range(1, self.width * self.height + 1):
             if i not in fixed_numbers:
-                x, y = indices.pop(0)
-                self.grid[x, y] = i
+                y, x = indices.pop(0)
+                self.board.grid[y, x] = i
 
-        self.moves.append(Board(self.grid))
-        return self.grid
+        self.moves.append(Board(self.width, self.height, self.board.grid))
+        return Board(self.width, self.height, self.board.grid)
 
     def _get_unfixed_cells(self):
         return np.argwhere(self.fixed_cells == False)
 
     def _get_fixed_numbers(self):
-        return self.grid[self.fixed_cells]
+        return self.board.grid[self.fixed_cells]
 
     def get_current_state(self):
-        return self.grid
+        return self.board
 
     def get_random_neighbor(self):
-        neighbor = np.copy(self.grid)
+        neighbor = np.copy(self.board.grid)
 
         unfixed_cells = self._get_unfixed_cells()
         number_of_rows = unfixed_cells.shape[0]
@@ -45,45 +45,29 @@ class HidatoSearchProblem(HidatoProblem):
         y_i, x_i = random_rows[0]
         y_j, x_j = random_rows[1]
 
-        temp = neighbor[x_i, y_i]
-        neighbor[x_i, y_i] = neighbor[x_j, y_j]
-        neighbor[x_j, y_j] = temp
+        temp = neighbor[y_i, x_i]
+        neighbor[y_i, x_i] = neighbor[y_j, x_j]
+        neighbor[y_j, x_j] = temp
 
         self.moves.append(Swap(x_i, y_i, x_j, y_j))
 
-        return neighbor
+        return Board(self.width, self.height, neighbor)
 
-    def set_current_state(self, state):
-        self.grid = state
-
-    def get_loss(self, state):
+    def get_loss(self, state: Board):
         loss = 0
 
-        prev_index = self._get_index_in_state(state, 1)
+        prev_index = state._2d_index(1)
         for i in range(2, self.size + 1):
-            current_index = self._get_index_in_state(state, i)
-            if not self._are_attached(*prev_index, *current_index):
+            current_index = state._2d_index(i)
+            if not Board._are_attached(*prev_index, *current_index):
                 loss += 1
 
             prev_index = current_index
 
         return loss
 
-    @staticmethod
-    def _get_index_in_state(state, x):
-        return tuple(np.argwhere(state == x)[0])
-
-    def _2d_index(self, variable):
-        return self._get_index_in_state(self.grid, variable)
-
-    def is_correct(self):
-        return self.is_complete() and self.is_consistent()
-
     def remove_last_move(self):
         self.moves.pop(-1)
-
-    def get(self, x, y):
-        return self.grid[x, y]
 
     def pop_swap_from_moves(self):
         """
