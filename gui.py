@@ -86,7 +86,6 @@ class HidatoUI(Frame):
 
         self.__create_grid_cell(x, y, number, text_color, bg_color)
 
-
     def __get_2d_gui_position(self, i, j):
         y = self._get_gui_position(i)
         x = self._get_gui_position(j)
