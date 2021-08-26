@@ -27,21 +27,22 @@ def generate_hidato(width, height, alpha):
     return gen.generate_grid(width, height, alpha)
 
 
-def _solve_csp(width, height, grid, select_variable, order_values, forward_checking, display=True):
+def _solve_csp(width, height, grid, select_variable, order_values, forward_checking, display):
     problem = HidatoCSP(width, height, grid)
-    if display:
-        problem.display()
+    problem.display()
 
     gui = HidatoUI(problem, width)
 
     solver = CSPSolver(problem)
     solver.solve(select_variable, order_values, forward_checking)
-    gui.show_solve_steps(problem.moves)
+
+    if display:
+        gui.show_solve_steps(problem.moves)
 
     return problem, solver._num_of_iterations
 
 
-def _solve_hill_climbing(width, height, grid):
+def _solve_hill_climbing(width, height, grid, display):
     problem = HidatoSearchProblem(width, height, grid)
     problem.display()
 
@@ -50,7 +51,8 @@ def _solve_hill_climbing(width, height, grid):
     solver = HillClimber()
     solver.solve(problem)
 
-    # gui.show_solve_steps(problem.moves)
+    if display:
+        gui.show_solve_steps(problem.moves)
 
     return problem
 
@@ -103,9 +105,10 @@ def main():
     grid = generate_hidato(width, height, args.alpha)
 
     if args.hill_climbing:
-        problem = _solve_hill_climbing(width, height, grid)
+        problem = _solve_hill_climbing(width, height, grid, args.gui)
     elif args.csp:
-        problem, _ = _solve_csp(width, height, grid, select_variable="MRV", order_values="LCV", forward_checking=False)
+        problem, _ = _solve_csp(width, height, grid, select_variable="MRV", order_values="LCV", forward_checking=False,
+                                display=args.gui)
 
     print("\nAfter solve:")
     sys.stdout.flush()
@@ -130,6 +133,7 @@ def setup_arg_parser():
     parser.add_argument('--benchmark', dest='benchmark', action='store_true')
     parser.add_argument('--dim', dest="dimension", default=DEFAULT_DIMENSION, type=int)
     parser.add_argument('--a', dest="alpha", default=DEFAULT_ALPHA, type=float)
+    parser.add_argument('--gui', dest='gui', action='store_true')
     return parser
 
 
