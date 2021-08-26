@@ -45,9 +45,9 @@ class Board:
             raise ValueError(f"The variable {variable} is not assigned.")
 
         x, y = self._2d_index(variable)
-        return self._neighbors_of_index(x, y)
+        return self.neighbors_of_index(x, y)
 
-    def _neighbors_of_index(self, x, y):
+    def neighbors_of_index(self, x, y):
         return {(i, j) for i, j in self._surrounding_indices(x, y) if self._is_in_grid(i, j)}
 
     @staticmethod
@@ -110,7 +110,7 @@ class Board:
         self.empty_cells = {tuple(row) for row in np.argwhere(self.grid == EMPTY)}
 
     def empty_neighbors(self, x, y):
-        return self._neighbors_of_index(x, y) & self.empty_cells
+        return self.neighbors_of_index(x, y) & self.empty_cells
 
     def copy(self):
         return Board(self.width, self.height, self.grid.copy())

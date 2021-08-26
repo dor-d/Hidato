@@ -18,7 +18,11 @@ END_WAIT_SECONDS = 15
 NUM_DELETE_MOVES_IN_SWAP = 2
 
 COLORMAP = cm.get_cmap('Greens')
-FLASHCOLOR = 'DarkGoldenrod1'
+ERROR_COLOR = 'red'
+EMPTY_COLOR = 'white'
+FLASH_COLOR = 'DarkGoldenrod1'
+GRID_COLOR = 'gray'
+
 
 
 class HidatoUI(Frame):
@@ -61,13 +65,13 @@ class HidatoUI(Frame):
         y0 = MARGIN
         x1 = MARGIN + i * SIDE
         y1 = self.size - MARGIN
-        self.canvas.create_line(x0, y0, x1, y1, fill="gray")
+        self.canvas.create_line(x0, y0, x1, y1, fill=GRID_COLOR)
 
         x0 = MARGIN
         y0 = MARGIN + i * SIDE
         x1 = self.size - MARGIN
         y1 = MARGIN + i * SIDE
-        self.canvas.create_line(x0, y0, x1, y1, fill="gray")
+        self.canvas.create_line(x0, y0, x1, y1, fill=GRID_COLOR)
 
     def __draw_puzzle(self):
         self.canvas.delete("numbers")
@@ -102,14 +106,21 @@ class HidatoUI(Frame):
         r = self.__create_rectangle(x, y, bg_color)
         self.canvas.tag_lower(r, z)
 
-    def __create_text(self, x, y, number, color):
+    def __create_text(self, x, y, text, color):
+        if text == EMPTY:
+            text = ''
         z = self.canvas.create_text(
-            x + SIDE / 2, y + SIDE / 2, text=number, tags=["numbers", self._tag(x, y)], fill=color
+            x + SIDE / 2, y + SIDE / 2, text=text, tags=["numbers", self._tag(x, y)], fill=color
         )
         return z
 
     def __choose_bg_color(self, number):
-        return self.__get_color_for(number) if self.__view_board.is_variable_consistent(number) else "red"
+        if number == EMPTY:
+            return EMPTY_COLOR
+        elif self.__view_board.is_variable_consistent(number):
+            return self.__get_color_for(number)
+        else:
+            return ERROR_COLOR
 
     def __get_color_for(self, number):
         rgb = self.__get_rgb_color_for(number)
@@ -151,8 +162,10 @@ class HidatoUI(Frame):
     def __show_move(self, move: Move):
         if move.number == EMPTY:
             self.__delete_from_cell(move.x_pos, move.y_pos)
+            self.__refresh_neighbors_bg_color(move.x_pos, move.y_pos)
         else:
-            self.__fill_cell(*move, 'black')
+            self.__fill_cell(*move)
+            self.__refresh_neighbors_bg_color(move.x_pos, move.y_pos)
 
     def __delete_from_cell(self, i, j):
         x, y = self.__get_2d_gui_position(i, j)
@@ -175,9 +188,14 @@ class HidatoUI(Frame):
         self.__set_cell(*first_cell, second_number)
         self.__set_cell(*second_cell, first_number)
 
+    def __refresh_neighbors_bg_color(self, i, j):
+        for neighbor in self.__view_board.neighbors_of_index(i, j):
+            self.__refresh_cell_bg_color(*neighbor)
+
     def __set_cell(self, i, j, number):
         self.__delete_from_cell(i, j)
         self.__fill_cell(i, j, number)
+        self.__refresh_neighbors_bg_color(i, j)
 
     def __flash_cell(self, i, j):
         self.__light_cell(i, j)
@@ -188,19 +206,15 @@ class HidatoUI(Frame):
         self.__change_bg_color(i, j, bg_color=None)
 
     def __light_cell(self, i, j):
-        self.__change_bg_color(i, j, bg_color=FLASHCOLOR)
+        self.__change_bg_color(i, j, bg_color=FLASH_COLOR)
 
     def __change_bg_color(self, i, j, bg_color):
         number = self.__view_board[i, j]
         self.__fill_cell(i, j, number, bg_color=bg_color)
 
     def __show_board(self, board: Board):
-        self.canvas.delete("numbers")
-        for i in range(self.dim):
-            for j in range(self.dim):
-                number = board.grid[i, j]
-                if number != EMPTY:
-                    self.__fill_cell(i, j, number)
+        self.__view_board = board
+        self.__draw_puzzle()
 
     def __update_gui_and_wait(self, wait_duration):
         self.__update_gui()
@@ -211,16 +225,23 @@ class HidatoUI(Frame):
         self.parent.update()
 
     def __win_animation(self):
+        self.__walking_flash_animation()
+        self.__flashing_animation()
+
+    def __walking_flash_animation(self):
         for i, j in self.__all_coordinates():
             self.__flash_cell(i, j)
         self.__update_gui_and_wait(STEP_WAIT_SECONDS / math.pi)
         for i, j in reversed(self.__all_coordinates()):
             self.__flash_cell(i, j)
         self.__update_gui_and_wait(STEP_WAIT_SECONDS / math.pi)
+
+    def __flashing_animation(self):
         self.__flash_all_even_cells()
         self.__flash_all_odd_cells()
         self.__flash_all_even_cells()
         self.__flash_all_odd_cells()
+        self.__flash_all_even_cells()
 
     def __flash_all_odd_cells(self):
         self.__flash_cells([(i, j) for i, j in self.__all_coordinates() if self.__2d_to_1d_index(i, j) % 2 != 0])
