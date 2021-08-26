@@ -31,39 +31,40 @@ class HidatoUI(Frame):
         self.dim = dim
         self.size = MARGIN * 2 + SIDE * dim
 
-        self.row, self.col = -1, -1
-
         self.__initUI()
 
     def __initUI(self):
         self.parent.title("Hidato")
         self.pack(fill=BOTH)
+        self.__create_canvas()
+        self.__draw_grid()
+        self.__draw_puzzle()
+
+    def __create_canvas(self):
         self.canvas = Canvas(self,
                              width=self.size,
                              height=self.size)
         self.canvas.pack(fill=BOTH, side=TOP)
-
-        self.__draw_grid()
-        self.__draw_puzzle()
 
     def __draw_grid(self):
         """
         Draws grid divided with black lines into dimxdim squares.
         """
         for i in range(self.dim + 1):
-            color = "gray"
+            self.__draw_ith_cell(i)
 
-            x0 = MARGIN + i * SIDE
-            y0 = MARGIN
-            x1 = MARGIN + i * SIDE
-            y1 = self.size - MARGIN
-            self.canvas.create_line(x0, y0, x1, y1, fill=color)
+    def __draw_ith_cell(self, i):
+        x0 = MARGIN + i * SIDE
+        y0 = MARGIN
+        x1 = MARGIN + i * SIDE
+        y1 = self.size - MARGIN
+        self.canvas.create_line(x0, y0, x1, y1, fill="gray")
 
-            x0 = MARGIN
-            y0 = MARGIN + i * SIDE
-            x1 = self.size - MARGIN
-            y1 = MARGIN + i * SIDE
-            self.canvas.create_line(x0, y0, x1, y1, fill=color)
+        x0 = MARGIN
+        y0 = MARGIN + i * SIDE
+        x1 = self.size - MARGIN
+        y1 = MARGIN + i * SIDE
+        self.canvas.create_line(x0, y0, x1, y1, fill="gray")
 
     def __draw_puzzle(self):
         self.canvas.delete("numbers")
