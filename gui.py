@@ -1,3 +1,4 @@
+import itertools
 import math
 from tkinter import Canvas, Frame, BOTH, TOP, Tk
 
@@ -12,11 +13,12 @@ import time
 MARGIN = 20  # Pixels around the board
 SIDE = 50  # Width of every board cell.
 START_WAIT_SECONDS = 3
-STEP_WAIT_SECONDS = 0.5
+STEP_WAIT_SECONDS = 0.3
 END_WAIT_SECONDS = 15
 NUM_DELETE_MOVES_IN_SWAP = 2
 
 COLORMAP = cm.get_cmap('Greens')
+FLASHCOLOR = 'DarkGoldenrod1'
 
 
 class HidatoUI(Frame):
@@ -142,6 +144,8 @@ class HidatoUI(Frame):
                 self.__show_board(step)
 
             self.__update_gui_and_wait(STEP_WAIT_SECONDS)
+        if self.problem.is_correct():
+            self.__win_animation()
         self.__wait(END_WAIT_SECONDS)
 
     def __show_move(self, move: Move):
@@ -156,12 +160,6 @@ class HidatoUI(Frame):
         self.__view_board[i, j] = EMPTY
 
     def __show_swap(self, swap):
-        """
-         Used to make several consecutive moves without updating gui to give the appearance of a swap.
-        :param change:
-        :return:
-        """
-
         first_cell = (swap.x_1, swap.y_1)
         second_cell = (swap.x_2, swap.y_2)
 
@@ -182,9 +180,15 @@ class HidatoUI(Frame):
         self.__fill_cell(i, j, number)
 
     def __flash_cell(self, i, j):
-        self.__change_bg_color(i, j, bg_color='DarkGoldenrod1')
+        self.__light_cell(i, j)
         self.__update_gui_and_wait(STEP_WAIT_SECONDS / math.pi)
+        self.__refresh_cell_bg_color(i, j)
+
+    def __refresh_cell_bg_color(self, i, j):
         self.__change_bg_color(i, j, bg_color=None)
+
+    def __light_cell(self, i, j):
+        self.__change_bg_color(i, j, bg_color=FLASHCOLOR)
 
     def __change_bg_color(self, i, j, bg_color):
         number = self.__view_board[i, j]
@@ -205,6 +209,44 @@ class HidatoUI(Frame):
     def __update_gui(self):
         self.parent.update_idletasks()
         self.parent.update()
+
+    def __win_animation(self):
+        for i, j in self.__all_coordinates():
+            self.__flash_cell(i, j)
+        self.__update_gui_and_wait(STEP_WAIT_SECONDS / math.pi)
+        for i, j in reversed(self.__all_coordinates()):
+            self.__flash_cell(i, j)
+        self.__update_gui_and_wait(STEP_WAIT_SECONDS / math.pi)
+        self.__flash_all_even_cells()
+        self.__flash_all_odd_cells()
+        self.__flash_all_even_cells()
+        self.__flash_all_odd_cells()
+
+    def __flash_all_odd_cells(self):
+        self.__flash_cells([(i, j) for i, j in self.__all_coordinates() if self.__2d_to_1d_index(i, j) % 2 != 0])
+
+    def __flash_all_even_cells(self):
+        self.__flash_cells([(i, j) for i, j in self.__all_coordinates() if self.__2d_to_1d_index(i, j) % 2 == 0])
+
+    def __2d_to_1d_index(self, i, j):
+        return i * self.dim + j % self.dim
+
+    def __flash_cells(self, cells):
+        self.__light_cells(cells)
+        self.__refresh_cells_bg_color(cells)
+
+    def __refresh_cells_bg_color(self, cells):
+        for cell in cells:
+            self.__refresh_cell_bg_color(*cell)
+        self.__update_gui_and_wait(STEP_WAIT_SECONDS / math.pi)
+
+    def __light_cells(self, cells):
+        for cell in cells:
+            self.__light_cell(*cell)
+        self.__update_gui_and_wait(STEP_WAIT_SECONDS / math.pi)
+
+    def __all_coordinates(self):
+        return [(i, j) for i in range(self.dim) for j in range(self.dim)]
 
     @staticmethod
     def __wait(duration):
