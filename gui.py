@@ -12,7 +12,7 @@ import time
 MARGIN = 20  # Pixels around the board
 SIDE = 50  # Width of every board cell.
 START_WAIT_SECONDS = 3
-STEP_WAIT_SECONDS = 0.0
+STEP_WAIT_SECONDS = 0.5
 END_WAIT_SECONDS = 15
 NUM_DELETE_MOVES_IN_SWAP = 2
 
