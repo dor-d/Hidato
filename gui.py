@@ -154,11 +154,11 @@ class HidatoUI(Frame):
         :param change:
         :return:
         """
-        # change color of swapped cells
 
         first_cell = (swap.x_1, swap.y_1)
         second_cell = (swap.x_2, swap.y_2)
 
+        # change color of swapped cells
         self.__flash_cell(*first_cell)
         self.__flash_cell(*second_cell)
         self.__update_gui_and_wait(STEP_WAIT_SECONDS)
@@ -169,20 +169,15 @@ class HidatoUI(Frame):
         # delete swapped cells
         self.__delete_from_cell(*first_cell)
         self.__delete_from_cell(*second_cell)
-        self.__update_gui_and_wait(STEP_WAIT_SECONDS / math.pi)
 
         # fill swapped cells
         self.__fill_cell(*first_cell, second_number)
         self.__fill_cell(*second_cell, first_number)
 
-        # for move in change.swap_moves_list[NUM_DELETE_MOVES_IN_SWAP:]:
-        #     self.__change_bg_color(move.x_pos, move.y_pos, bg_color='gold')
-        # self.__update_gui_and_wait(STEP_WAIT_SECONDS)
-        # for move in change.swap_moves_list[NUM_DELETE_MOVES_IN_SWAP:]:
-        #     self.__change_bg_color(move.x_pos, move.y_pos, bg_color=None)
-
     def __flash_cell(self, i, j):
         self.__change_bg_color(i, j, bg_color='gold')
+        self.__update_gui_and_wait(STEP_WAIT_SECONDS / math.pi)
+        self.__change_bg_color(i, j, bg_color=None)
 
     def __change_bg_color(self, x, y, bg_color):
         number = self.problem.get(x, y)
