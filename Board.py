@@ -40,9 +40,6 @@ class Board:
     def set(self, x, y, number):
         self.grid[x, y] = number
 
-    def _2d_index(self, variable):
-        return np.argwhere(self.grid == variable)[0]
-
     def _is_in_grid(self, x, y):
         return 0 <= x < self.height and 0 <= y < self.width
 
@@ -119,6 +116,9 @@ class Board:
         self.grid[index] = EMPTY
         self.update()
         return Move(*index, EMPTY)
+
+    def _2d_index(self, variable):
+        return tuple(np.argwhere(self.grid == variable)[0])
 
     def update(self):
         self.empty_cells = {tuple(row) for row in np.argwhere(self.grid == EMPTY)}
