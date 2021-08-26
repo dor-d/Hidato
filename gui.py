@@ -101,8 +101,8 @@ class HidatoUI(Frame):
         self.__view_grid[i, j] = number
 
     def __get_2d_gui_position(self, i, j):
-        x = self._get_gui_position(i)
-        y = self._get_gui_position(j)
+        y = self._get_gui_position(i)
+        x = self._get_gui_position(j)
         return x, y
 
     def __create_grid_cell(self, x, y, number, text_color, bg_color):
@@ -114,14 +114,14 @@ class HidatoUI(Frame):
         r = self.__create_rectangle(x, y, bg_color)
         self.canvas.tag_lower(r, z)
 
-    def __choose_bg_color(self, number):
-        return self.colors[number - 1] if self.problem.is_variable_consistent(number) else "red"
-
     def __create_text(self, x, y, number, color):
         z = self.canvas.create_text(
             x + SIDE / 2, y + SIDE / 2, text=number, tags=["numbers", self._tag(x, y)], fill=color
         )
         return z
+
+    def __choose_bg_color(self, number):
+        return self.colors[number - 1] if self.problem.is_variable_consistent(number) else "red"
 
     def __create_rectangle(self, x, y, bg_color):
         r = self.canvas.create_rectangle(x, y, x + SIDE, y + SIDE, fill=bg_color,
@@ -194,7 +194,7 @@ class HidatoUI(Frame):
             for j in range(self.dim):
                 number = board.grid[i, j]
                 if number != EMPTY:
-                    self.__fill_cell(i, j, number, 'black')
+                    self.__fill_cell(i, j, number)
 
     def __update_gui_and_wait(self, wait_duration):
         self.__update_gui()
