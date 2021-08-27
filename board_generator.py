@@ -1,22 +1,14 @@
-import subprocess
 import os
-
-import anneal
 import random
+import subprocess
 
-from hidato_search_problem import HidatoSearchProblem
-from hidato_csp import *
+from utils import EMPTY
 
 
 class HidatoGenerator:
-
-    # def generate_hidato_csp(self, width, height, alpha=0.5):
-    #     grid = self._generate_grid(width, height, alpha)
-    #     return HidatoCSP(width, height, grid)
-    #
-    # def generate_hidato_search_problem(self, width, height, alpha=0.5):
-    #     grid = self._generate_grid(width, height, alpha)
-    #     return HidatoSearchProblem(width, height, grid)
+    """
+    Generate an Hidato grid with the given dimensions.
+    """
 
     def generate_grid(self, width, height, alpha=0.5):
         grid = self._generate_puzzle_c(width, height)

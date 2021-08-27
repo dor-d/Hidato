@@ -1,12 +1,18 @@
 import time
+from collections import namedtuple
+EMPTY = -1
+
+Move = namedtuple('Move', ['x_pos', 'y_pos', 'number'])
+Swap = namedtuple('Swap', ['x_1', 'y_1', 'x_2', 'y_2'])
 
 
 def timeit(func):
     def timed_func(*args, **kwargs):
         start = time.time()
         result = func(*args, **kwargs)
-        _print_runnning_time(_time_since(start), func.__name__)
-        return result
+        time_since = _time_since(start)
+        _print_runnning_time(time_since, func.__name__)
+        return result, time_since
 
     return timed_func
 

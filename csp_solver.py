@@ -1,15 +1,15 @@
 import random
-
-from csp import CSP
-from ac3 import ac3
+import sys
 
 MINIMUM_REMAINING_VALUES = "MRV"
 LEAST_CONSTRAINING_VALUE = "LCV"
 
 
+
 class CSPSolver:
-    def __init__(self, problem: CSP):
+    def __init__(self, problem):
         self.problem = problem
+        self._num_of_iterations = 0
 
     def solve(self, select_variable, order_values, forward_checking):
         select_variable_func = self._variable_by_order
@@ -20,7 +20,12 @@ class CSPSolver:
         if order_values == LEAST_CONSTRAINING_VALUE:
             order_values_func = self._least_constraining_value
 
-        return self._recursive_backtracking(select_variable_func, order_values_func, forward_checking)
+        self._num_of_iterations = 0
+        result = self._recursive_backtracking(select_variable_func, order_values_func, forward_checking)
+        if self._num_of_iterations == 0:
+            self.problem.display()
+            print(select_variable, order_values, forward_checking)
+        return result
 
     def _recursive_backtracking(self, select_variable_func, order_values_func, forward_checking):
         if self.problem.is_complete():
@@ -28,24 +33,27 @@ class CSPSolver:
 
         variable = select_variable_func()
         for value in order_values_func(variable):
+            self._num_of_iterations += 1
+
+            # print(f'assigning {variable}')
             self.problem.assign(variable, value)
             if forward_checking:
-                if variable == 1:
-                    arcs = [(2, 1)]
-                elif variable == self.problem.size:
-                    arcs = [(self.problem.size - 1, variable)]
-                else:
-                    arcs = [(variable - 1, variable), (variable + 1, variable)]
+                arcs = self.problem.get_arcs(variable)
 
-                if not ac3(self.problem, arcs):
+                if not self.ac3(arcs):
+                    # print(f'deleting {variable}')
+                    # sys.stdout.flush()
                     self.problem.delete_assignment(variable)
                     continue
 
             result = self._recursive_backtracking(select_variable_func, order_values_func, forward_checking)
             if result is not None:
                 return self.problem
+            # print(f'deleting {variable}')
+            # sys.stdout.flush()
             self.problem.delete_assignment(variable)
-        return None
+
+        return
 
     def _variable_by_order(self):
         return min(var for var in self.problem.get_variables() if not self.problem.is_assigned(var))
@@ -55,7 +63,7 @@ class CSPSolver:
         min_value = -1
 
         for x in self.problem.get_variables():
-            if not self.problem.is_assigned(x) and (self.problem.is_assigned(x - 1) or self.problem.is_assigned(x + 1)):
+            if not self.problem.board.is_assigned(x) and (self.problem.board.is_assigned(x - 1) or self.problem.board.is_assigned(x + 1)):
                 value = len(self.problem.get_constraints(x))
                 if min_var is None or value < min_value:
                     min_var = x
@@ -72,3 +80,45 @@ class CSPSolver:
 
     def _least_constraining_value(self, variable):
         return sorted(self.problem.get_constraints(variable), key=self.num_constraints, reverse=True)
+
+    def ac3(self, arcs):
+        queue = arcs.copy()
+
+        while queue:
+            y, x = queue.pop(0)
+
+            if self.revise(y, x):
+                if len(self.problem.get_domain(x)) == 0:
+                    # inconsistency was found
+                    return False
+
+                neighbors = set()
+                for arc in arcs:
+                    if arc[0] == x and arc[1] != y:
+                        neighbors.add((arc[1], x))
+                    elif arc[1] == x and arc[0] != y:
+                        neighbors.add((arc[0], x))
+
+                queue.extend(neighbors)
+
+        return True
+
+    def revise(self, a, b):
+        constraint_func = self.problem.get_binary_constraints(a, b)
+
+        a_domain = self.problem.get_domain(a).copy()
+        b_domain = self.problem.get_domain(b).copy()
+
+        revised = False
+
+        for a_value in a_domain:
+            satisfies = False
+            for b_value in b_domain:
+                if constraint_func(a_value, b_value):
+                    satisfies = True
+
+            if not satisfies:
+                self.problem.get_domain(a).remove(a_value)
+                revised = True
+
+        return revised
