@@ -32,9 +32,6 @@ class HidatoSearchProblem(HidatoProblem):
     def _get_fixed_numbers(self):
         return self.board.grid[self.fixed_cells]
 
-    def get_current_state(self):
-        return self.board
-
     def get_random_neighbor(self):
         neighbor = np.copy(self.board.grid)
 
