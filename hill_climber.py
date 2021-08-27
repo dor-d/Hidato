@@ -9,7 +9,7 @@ class HillClimber:
     Solve Hidato with stochastic hill-climbing with random-restarts.
     """
 
-    def solve(self, problem: HidatoSearchProblem, max_iterations=None, random_restart_chance=0.005):
+    def solve(self, problem: HidatoSearchProblem, max_iterations=None, random_restart_chance=0.01):
 
         loss = []
 

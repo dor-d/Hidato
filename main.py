@@ -154,7 +154,7 @@ def setup_arg_parser():
     parser.add_argument('--benchmark', dest='benchmark', action='store_true')
     parser.add_argument('--dim', dest="dimension", default=DEFAULT_DIMENSION, type=int)
     parser.add_argument('--a', dest="alpha", default=DEFAULT_ALPHA, type=float)
-    parser.add_argument('--gui', dest='gui', action='store_true')
+    parser.add_argument('--gui', dest='gui', default=False, action='store_true')
     return parser
 
 
