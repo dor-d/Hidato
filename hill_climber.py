@@ -10,6 +10,9 @@ class HillClimber:
     """
 
     def solve(self, problem: HidatoSearchProblem, max_iterations=None, random_restart_chance=0.005):
+
+        loss = []
+
         if max_iterations is None:
             max_iterations = ceil(problem.size ** 0.5 * 5000)
 
@@ -21,6 +24,10 @@ class HillClimber:
         best_loss = 0
 
         for i in range(max_iterations):
+
+            if len(loss) == 0 or current_loss < loss[-1]:
+                loss.append(current_loss)
+
             neighbor = problem.get_random_neighbor()
             neighbor_loss = problem.get_loss(neighbor)
 
@@ -45,8 +52,21 @@ class HillClimber:
                 best_loss, best_state = current_loss, current_state
 
         problem.set_current_state(best_state)
+        self.plot_loss(loss)
 
         return problem
+
+    @staticmethod
+    def plot_loss(loss):
+        plt.scatter(np.arange(len(loss)), loss, marker=',')
+        plt.plot(loss, c='r', linewidth=1, alpha=0.7)
+        plt.xlabel('steps')
+        plt.ylabel('loss')
+        min_loss = np.min(loss)
+        plt.title(f'HillClimb loss, min loss = {min_loss}')
+        plt.plot(np.arange(len(loss)), np.ones_like(loss) * min_loss, c='k')
+        plt.savefig(f'hillclimb_loss_plot_{len(loss)}_steps')
+        plt.show()
 
     @staticmethod
     def _should_do_random_restart(random_restart_chance=0.1):
