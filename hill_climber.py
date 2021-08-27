@@ -3,6 +3,7 @@ from math import ceil
 
 import numpy as np
 from matplotlib import pyplot as plt
+import simpleai
 
 from hidato_search_problem import HidatoSearchProblem
 
@@ -11,8 +12,8 @@ class HillClimber:
     """
     Solve Hidato with stochastic hill-climbing with random-restarts.
     """
-
-    def solve(self, problem: HidatoSearchProblem, max_iterations=None, random_restart_chance=0.01):
+    def solve(self, problem: HidatoSearchProblem, max_iterations=None, random_restart_chance=0.01,
+              expander="first-1choice"):
 
         loss = []
 
@@ -27,11 +28,17 @@ class HillClimber:
         best_loss = 0
 
         for i in range(max_iterations):
+            if current_loss < problem.size ** 2 * 0.01:
+                break
 
             if len(loss) == 0 or current_loss < loss[-1]:
                 loss.append(current_loss)
 
-            neighbor = problem.get_random_neighbor()
+            if expander == "first-choice":
+                neighbor = problem.get_random_neighbor()
+            else:
+                neighbor = problem.get_best_neighbor()
+
             neighbor_loss = problem.get_loss(neighbor)
 
             if current_loss <= neighbor_loss:

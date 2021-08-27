@@ -1,3 +1,6 @@
+import itertools
+import math
+
 import numpy as np
 
 from Board import Board
@@ -27,10 +30,13 @@ class HidatoSearchProblem(HidatoProblem):
         return random_state
 
     def _get_unfixed_cells(self):
-        return np.argwhere(self.fixed_cells == False)
+        return [tuple(v) for v in np.argwhere(self.fixed_cells == False)]
 
     def _get_fixed_numbers(self):
         return self.board.grid[self.fixed_cells]
+
+    def _get_unfixed_numbers(self):
+        return self.board.grid[np.logical_not(self.fixed_cells)]
 
     def get_random_neighbor(self):
         neighbor = np.copy(self.board.grid)
@@ -51,6 +57,38 @@ class HidatoSearchProblem(HidatoProblem):
 
         return Board(self.width, self.height, neighbor)
 
+    def get_best_neighbor(self):
+        current_loss = self.get_loss(self.board)
+
+        for variable in self._get_unfixed_numbers():
+            if self.board.is_variable_consistent(variable):
+                continue
+
+            var_index = self.board._2d_index(variable)
+
+            for unfixed_cell in self._get_unfixed_cells():
+                board = self.get_neighbor_by_swapping(*var_index, *unfixed_cell)
+                loss = self.get_loss(board)
+
+                if current_loss > loss:
+                    swap = Swap(*var_index, *unfixed_cell)
+                    self.moves.append(swap)
+                    return board
+
+        return self.get_random_state()
+
+    def get_neighbor_by_swapping(self, x_i, y_i, x_j, y_j):
+        neighbor = np.copy(self.board.grid)
+
+        temp = neighbor[y_i, x_i]
+        neighbor[y_i, x_i] = neighbor[y_j, x_j]
+        neighbor[y_j, x_j] = temp
+
+        board = Board(self.width, self.height, neighbor)
+
+        return board
+
+
     def get_loss(self, state: Board):
         loss = 0
 
@@ -62,7 +100,7 @@ class HidatoSearchProblem(HidatoProblem):
 
             prev_index = current_index
 
-        return loss
+        return loss / self.size
 
     def remove_last_move(self):
         self.moves.pop(-1)
