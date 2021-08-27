@@ -1,6 +1,9 @@
 import random
 from math import ceil
 
+import numpy as np
+from matplotlib import pyplot as plt
+
 from hidato_search_problem import HidatoSearchProblem
 
 
@@ -58,7 +61,7 @@ class HillClimber:
 
     @staticmethod
     def plot_loss(loss):
-        plt.scatter(np.arange(len(loss)), loss, marker=',')
+        plt.scatter(np.arange(len(loss)), loss, marker='.', color='green')
         plt.plot(loss, c='r', linewidth=1, alpha=0.7)
         plt.xlabel('steps')
         plt.ylabel('loss')
