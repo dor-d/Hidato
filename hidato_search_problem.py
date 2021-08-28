@@ -20,7 +20,9 @@ class HidatoSearchProblem(HidatoProblem):
         return self.board
 
     def init_random_state(self):
-        self.set_current_state(self.get_random_state())
+        random_state = self.get_random_state()
+        self.set_current_state(random_state)
+        self.moves.append(Board(self.width, self.height, random_state.grid))
 
     def get_random_state(self):
         indices = self._get_unfixed_cells()
@@ -31,10 +33,7 @@ class HidatoSearchProblem(HidatoProblem):
             if i not in fixed_numbers:
                 random_state[tuple(indices.pop(0))] = i
 
-        self.moves.append(Board(self.width, self.height, random_state.grid))
-
         return random_state
-
 
     def _get_unfixed_cells(self):
         return [tuple(v) for v in np.argwhere(self.fixed_cells == False)]
