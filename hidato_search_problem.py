@@ -14,6 +14,9 @@ class HidatoSearchProblem(HidatoProblem):
     def __init__(self, width, height, grid):
         super().__init__(width, height, grid)
         self.fixed_cells = self.board.grid != EMPTY
+
+        fixed_numbers = self._get_fixed_numbers()
+        self.unfixed_numbers = [num for num in range(1, self.size + 1) if num not in fixed_numbers]
         self.moves = []
 
     def get_current_state(self):
@@ -40,9 +43,6 @@ class HidatoSearchProblem(HidatoProblem):
 
     def _get_fixed_numbers(self):
         return self.board.grid[self.fixed_cells]
-
-    def _get_unfixed_numbers(self):
-        return self.board.grid[np.logical_not(self.fixed_cells)]
 
     def move_to_first_better_neighbor(self):
         for first_cell, second_cell in itertools.combinations(self._get_unfixed_cells(), 2):
@@ -96,7 +96,7 @@ class HidatoSearchProblem(HidatoProblem):
         loss = 0
 
         prev_index = state._2d_index(1)
-        for i in range(2, self.size + 1):
+        for i in self.unfixed_numbers:
             current_index = state._2d_index(i)
             if not Board._are_attached(*prev_index, *current_index):
                 loss += 1

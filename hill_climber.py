@@ -13,13 +13,10 @@ class HillClimber:
     Solve Hidato with stochastic hill-climbing with random-restarts.
     """
 
-    def solve(self, problem: HidatoSearchProblem, max_iterations=None, random_restart_chance=0.01,
+    def solve(self, problem: HidatoSearchProblem, max_iterations, random_restart_chance=0.01,
               expander="first-1choice"):
 
         loss = []
-
-        if max_iterations is None:
-            max_iterations = ceil(problem.size ** 0.5 * 5000)
 
         problem.init_random_state()
 
@@ -28,6 +25,10 @@ class HillClimber:
 
         for i in range(max_iterations):
             current_loss = problem.get_current_loss()
+
+            if current_loss == 0:
+                break
+
             loss.append(current_loss)
 
             if best_state is None or current_loss < best_loss:

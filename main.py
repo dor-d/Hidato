@@ -90,19 +90,19 @@ def benchmark(width, height, grid):
 
 
 def benchmark_hill_climbing(width, height, grid):
-    random_restart_chances = [0.001, 0.05, 0.01, 0.05, 0.1, 0.5]
+    max_iterations_values = [30, 50, 60]
     results = []
     solver = HillClimber()
 
-    for p in random_restart_chances:
-        print(p)
+    for count in max_iterations_values:
         problem = HidatoSearchProblem(width, height, grid)
-        solver.solve(problem, max_iterations=int(1e6), random_restart_chance=p)
+        solver.solve(problem, max_iterations=count)
         loss = problem.get_loss(problem.board)
-        print(loss)
-        results.append((p, loss))
+        absolute_loss = loss * problem.size
+        print(count, loss, absolute_loss)
+        results.append((count, loss, absolute_loss))
 
-    df = pd.DataFrame(results, columns=["probability", "loss"])
+    df = pd.DataFrame(results, columns=["max_iterations", "loss", "absolute_loss"])
     df.to_csv(HILL_OUTPUT_FILENAME)
 
 
@@ -138,7 +138,9 @@ def main():
     print(f"Solution is {'correct' if is_correct else 'incorrect'}.")
     if not is_correct:
         loss = problem.get_loss(problem.board)
-        print(f"There are {loss} errors.")
+        absolute_loss = loss * width * height
+        print(f"There are {absolute_loss} errors.")
+        print(f"The loss is {loss}.")
 
 
 def parse_args():
