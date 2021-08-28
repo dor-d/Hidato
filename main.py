@@ -92,7 +92,7 @@ def benchmark(width, height, grid):
 
 
 def benchmark_hill_climbing(width, height, grid, alpha):
-    max_error = (1 - alpha) * width * height
+    max_error = alpha * width * height
     max_steps = max_error * 2
     results = []
     solver = HillClimber()
