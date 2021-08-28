@@ -22,7 +22,7 @@ DEFAULT_DIMENSION = 5
 BENCHMARK_ITERATIONS = 10
 MICROSECS_IN_SECS = 1e6
 THE_FUNNY_NUMBER = 42
-CSP_OUTPUT_FILENAME = 'csp_runtimes.csv'
+CSP_OUTPUT_FILENAME = 'csp_runtimes_{}.csv'
 HILL_OUTPUT_FILENAME = "hill_loss.csv"
 
 
@@ -63,7 +63,7 @@ def _solve_hill_climbing(width, height, grid, display=False):
     return problem
 
 
-def benchmark(width, height, grid):
+def benchmark(width, height, grid, alpha):
     select_variables_options = ["Ordered", "MRV"]
     order_values_options = ["Random", "LCV"]
     forward_checking = [True, False]
@@ -88,7 +88,7 @@ def benchmark(width, height, grid):
 
         results.append((key, running_time, num_of_backtracking))
 
-    export_results_to_csv(results)
+    export_results_to_csv(results, alpha)
 
 
 def benchmark_hill_climbing(width, height, grid, alpha):
@@ -109,9 +109,9 @@ def benchmark_hill_climbing(width, height, grid, alpha):
     df.to_csv(HILL_OUTPUT_FILENAME)
 
 
-def export_results_to_csv(results):
+def export_results_to_csv(results, alpha):
     df = pd.DataFrame(results, columns=["heuristic", "running time", "backtracking_steps"])
-    df.to_csv(CSP_OUTPUT_FILENAME)
+    df.to_csv(CSP_OUTPUT_FILENAME.format(alpha))
 
 
 def main():
@@ -122,8 +122,8 @@ def main():
     grid = generate_hidato(width, height, args.alpha)
 
     if args.benchmark:
-        # benchmark(width, height, grid)
-        benchmark_hill_climbing(width, height, grid, args.alpha)
+        benchmark(width, height, grid, args.alpha)
+        # benchmark_hill_climbing(width, height, grid, args.alpha)
         return
 
     print(f'Solving a {width} x {height} Hidato...\n')
