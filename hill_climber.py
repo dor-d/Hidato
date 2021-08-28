@@ -18,13 +18,11 @@ class HillClimber:
 
         loss = []
 
-        problem.init_random_state()
-
         best_state = None
         best_loss = 0
 
         steps = 0
-
+        problem.init_random_state()
         while steps <= max_steps:
             steps += 1
             current_loss = problem.get_current_loss()
