@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 
 from hidato_search_problem import HidatoSearchProblem
 
-RANDOM_CHOICE = "random"
+RANDOM_CHOICE = "random-choice"
 FIRST_CHOICE = "first-choice"
 
 
@@ -51,17 +51,17 @@ class HillClimber:
             best_state = problem.get_current_state()
 
         problem.set_current_state(best_state)
-        self.plot_loss(loss)
+        self.plot_loss(loss, expander)
         return problem
 
     @staticmethod
-    def plot_loss(loss):
+    def plot_loss(loss, title):
         plt.scatter(np.arange(len(loss)), loss, marker='.', color='green')
         plt.plot(loss, c='r', linewidth=1, alpha=0.7)
         plt.xlabel('steps')
         plt.ylabel('loss')
         min_loss = np.min(loss)
-        plt.title(f'HillClimb loss, min loss = {"{0:.3g}".format(min_loss)}')
+        plt.title(f'{title} hill-climbing loss, min loss = {"{0:.3g}".format(min_loss)}')
         plt.plot(np.arange(len(loss)), np.ones_like(loss) * min_loss, c='k')
         plt.savefig(f'hillclimb_loss_plot_{len(loss)}_steps')
         plt.show()
