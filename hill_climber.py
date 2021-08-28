@@ -49,35 +49,6 @@ class HillClimber:
         self.plot_loss(loss)
         return problem
 
-        # if expander == "first-choice":
-        #     neighbor = problem.get_random_neighbor()
-        # else:
-        #     neighbor = problem.move_to_best_neighbor()
-
-        # neighbor_loss = problem.get_loss(neighbor)
-
-        # if current_loss <= neighbor_loss:
-        #     problem.undo_last_move()
-        #
-        #     if self._should_do_random_restart(random_restart_chance):
-        #         random_state = problem.get_random_state()
-        #         random_state_loss = problem.get_loss(random_state)
-        #
-        #         if random_state_loss < current_loss:
-        #             problem.set_current_state(random_state)
-        #             current_state, current_loss = random_state, random_state_loss
-        #         else:
-        #             problem.undo_last_move()
-        #
-        # elif neighbor_loss < current_loss:
-        #     problem.set_current_state(neighbor)
-        #     current_state, current_loss = neighbor, neighbor_loss
-        #
-        # if best_state is None or current_loss < best_loss:
-        #     best_loss, best_state = current_loss, current_state
-
-        # problem.set_current_state(best_state)
-
     @staticmethod
     def plot_loss(loss):
         plt.scatter(np.arange(len(loss)), loss, marker='.', color='green')
