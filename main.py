@@ -93,17 +93,17 @@ def benchmark(width, height, grid):
 def benchmark_hill_climbing(width, height, grid, alpha):
     max_error = (1 - alpha) * width * height
     error_multipliers = [1, 1.5, 2, 2.5]
-    max_iterations_values = [math.ceil(max_error * mul) for mul in error_multipliers]
+    max_steps_values = [math.ceil(max_error * mul) for mul in error_multipliers]
     results = []
     solver = HillClimber()
 
-    for count in max_iterations_values:
+    for max_steps in max_steps_values:
         problem = HidatoSearchProblem(width, height, grid)
-        solver.solve(problem, max_steps=count)
+        solver.solve(problem, max_steps=max_steps)
         loss = problem.get_loss(problem.board)
         absolute_loss = loss * problem.size
-        print(f'steps={count}, rel_loss={loss}, abs_loss={absolute_loss}')
-        results.append((count, loss, absolute_loss))
+        print(f'steps={max_steps}, rel_loss={loss}, abs_loss={absolute_loss}')
+        results.append((max_steps, loss, absolute_loss))
 
     df = pd.DataFrame(results, columns=["max_iterations", "loss", "absolute_loss"])
     df.to_csv(HILL_OUTPUT_FILENAME)
