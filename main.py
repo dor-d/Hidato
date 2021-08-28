@@ -8,6 +8,7 @@ import random
 import numpy as np
 import pandas as pd
 
+import hill_climber
 from board_generator import HidatoGenerator
 from csp_solver import CSPSolver
 from hidato_csp import HidatoCSP
@@ -92,14 +93,13 @@ def benchmark(width, height, grid):
 
 def benchmark_hill_climbing(width, height, grid, alpha):
     max_error = (1 - alpha) * width * height
-    error_multipliers = [1, 1.5, 2, 2.5]
-    max_steps_values = [math.ceil(max_error * mul) for mul in error_multipliers]
+    max_steps = max_error * 2
     results = []
     solver = HillClimber()
 
-    for max_steps in max_steps_values:
+    for expander in [hill_climber.RANDOM_CHOICE, hill_climber.FIRST_CHOICE]:
         problem = HidatoSearchProblem(width, height, grid)
-        solver.solve(problem, max_steps=max_steps)
+        solver.solve(problem, max_steps=max_steps, expander=expander)
         loss = problem.get_loss(problem.board)
         absolute_loss = loss * problem.size
         print(f'steps={max_steps}, rel_loss={loss}, abs_loss={absolute_loss}')

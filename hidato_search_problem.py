@@ -1,5 +1,5 @@
 import itertools
-import math
+import random
 
 import numpy as np
 
@@ -63,23 +63,13 @@ class HidatoSearchProblem(HidatoProblem):
         return self.get_loss(self.board)
 
     def get_random_neighbor(self):
-        neighbor = np.copy(self.board.grid)
-
         unfixed_cells = self._get_unfixed_cells()
-        number_of_rows = unfixed_cells.shape[0]
-        random_indices = np.random.choice(number_of_rows, size=2, replace=False)
-        random_rows = unfixed_cells[random_indices, :]
+        first_cell, second_cell = random.sample(unfixed_cells, 2)
 
-        y_i, x_i = random_rows[0]
-        y_j, x_j = random_rows[1]
+        self.__swap(*first_cell, *second_cell)
+        self.moves.append(Swap(*first_cell, *second_cell))
 
-        temp = neighbor[y_i, x_i]
-        neighbor[y_i, x_i] = neighbor[y_j, x_j]
-        neighbor[y_j, x_j] = temp
-
-        self.moves.append(Swap(x_i, y_i, x_j, y_j))
-
-        return Board(self.width, self.height, neighbor)
+        return True
 
     def get_neighbor_by_swapping(self, x_i, y_i, x_j, y_j):
         neighbor = np.copy(self.board.grid)
