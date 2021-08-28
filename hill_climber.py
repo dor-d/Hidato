@@ -14,13 +14,15 @@ class HillClimber:
     Solve Hidato with stochastic hill-climbing with random-restarts.
     """
 
-    def solve(self, problem: HidatoSearchProblem, max_steps=math.inf):
+    def solve(self, problem: HidatoSearchProblem, max_steps=None):
 
         loss = []
 
         best_state = None
         best_loss = 0
 
+        if max_steps is None:
+            max_steps = problem.size * 3
         steps = 0
         problem.init_random_state()
         while steps <= max_steps:

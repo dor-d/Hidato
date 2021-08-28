@@ -1,6 +1,6 @@
 import itertools
 import math
-from tkinter import Canvas, Frame, BOTH, TOP, Tk
+from tkinter import Canvas, Frame, BOTH, TOP, Tk, messagebox
 
 import numpy as np
 from matplotlib import cm
@@ -12,7 +12,7 @@ import time
 
 MARGIN = 20  # Pixels around the board
 SIDE = 50  # Width of every board cell.
-START_WAIT_SECONDS = 3
+START_WAIT_SECONDS = 0
 STEP_WAIT_SECONDS = 0.3
 SHORT_STEP_WAIT_SECONDS = STEP_WAIT_SECONDS / math.pi
 END_WAIT_SECONDS = 15
@@ -145,6 +145,8 @@ class HidatoUI(Frame):
         return r
 
     def show_solve_steps(self, steps):
+        if not self.__ask_show_or_cancel():
+            return
         self.__update_gui_and_wait(START_WAIT_SECONDS)
         for step in steps:
             if isinstance(step, Move):
@@ -241,6 +243,9 @@ class HidatoUI(Frame):
                 self.__flash_row_from_left(i)
             else:
                 self.__flash_row_from_right(i)
+        self.__flash_all_cells_error()
+
+    def __flash_all_cells_error(self):
         self.__flash_cells(self.__all_coordinates(), color=ERROR_COLOR)
         self.__refresh_cells_bg_color(self.__all_coordinates())
         self.__update_gui_and_wait(STEP_WAIT_SECONDS)
@@ -307,3 +312,6 @@ class HidatoUI(Frame):
             self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
             self.__light_cell(i, j)
         self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
+
+    def __ask_show_or_cancel(self):
+        return messagebox.askokcancel('Show Solution?', 'Do you want to see the solution steps?')
