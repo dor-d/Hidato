@@ -56,7 +56,7 @@ class HillClimber:
         plt.xlabel('steps')
         plt.ylabel('loss')
         min_loss = np.min(loss)
-        plt.title(f'HillClimb loss, min loss = {min_loss}')
+        plt.title(f'HillClimb loss, min loss = {"{0:.3g}".format(min_loss)}')
         plt.plot(np.arange(len(loss)), np.ones_like(loss) * min_loss, c='k')
         plt.savefig(f'hillclimb_loss_plot_{len(loss)}_steps')
         plt.show()

@@ -136,3 +136,5 @@ dmypy.json
 .pyre/
 .idea/Hidato.iml
 .idea/misc.xml
+
+*.png
