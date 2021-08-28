@@ -74,7 +74,7 @@ def benchmark(width, height, grid):
 
         running_time = []
         backtracking_steps = []
-        for i in range(BENCHMARK_ITERATIONS):
+        for _ in range(BENCHMARK_ITERATIONS):
             start = time.time()
             _, num_of_backtracking = _solve_csp(width, height, grid, select_var, order_values, fc, False)
             time_since = _time_since(start)

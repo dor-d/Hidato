@@ -16,6 +16,12 @@ class HidatoSearchProblem(HidatoProblem):
         self.fixed_cells = self.board.grid != EMPTY
         self.moves = []
 
+    def get_current_state(self):
+        return self.board
+
+    def init_random_state(self):
+        self.set_current_state(self.get_random_state())
+
     def get_random_state(self):
         indices = self._get_unfixed_cells()
         indices = list(np.random.permutation(indices))
@@ -29,6 +35,7 @@ class HidatoSearchProblem(HidatoProblem):
 
         return random_state
 
+
     def _get_unfixed_cells(self):
         return [tuple(v) for v in np.argwhere(self.fixed_cells == False)]
 
@@ -37,6 +44,24 @@ class HidatoSearchProblem(HidatoProblem):
 
     def _get_unfixed_numbers(self):
         return self.board.grid[np.logical_not(self.fixed_cells)]
+
+    def move_to_first_better_neighbor(self):
+        for first_cell, second_cell in itertools.combinations(self._get_unfixed_cells(), 2):
+            if self.__swap_if_loss_improves(*first_cell, *second_cell):
+                return True
+        return False
+
+    def __swap_if_loss_improves(self, x_1, y_1, x_2, y_2):
+        loss_before_swap = self.get_current_loss()
+        self.__swap(x_1, y_1, x_2, y_2)
+        if self.get_current_loss() < loss_before_swap:
+            self.moves.append(Swap(x_1, y_1, x_2, y_2))
+            return True
+        self.__swap(x_1, y_1, x_2, y_2)
+        return False
+
+    def get_current_loss(self):
+        return self.get_loss(self.board)
 
     def get_random_neighbor(self):
         neighbor = np.copy(self.board.grid)
@@ -57,26 +82,6 @@ class HidatoSearchProblem(HidatoProblem):
 
         return Board(self.width, self.height, neighbor)
 
-    def get_best_neighbor(self):
-        current_loss = self.get_loss(self.board)
-
-        for variable in self._get_unfixed_numbers():
-            if self.board.is_variable_consistent(variable):
-                continue
-
-            var_index = self.board._2d_index(variable)
-
-            for unfixed_cell in self._get_unfixed_cells():
-                board = self.get_neighbor_by_swapping(*var_index, *unfixed_cell)
-                loss = self.get_loss(board)
-
-                if current_loss > loss:
-                    swap = Swap(*var_index, *unfixed_cell)
-                    self.moves.append(swap)
-                    return board
-
-        return self.get_random_state()
-
     def get_neighbor_by_swapping(self, x_i, y_i, x_j, y_j):
         neighbor = np.copy(self.board.grid)
 
@@ -87,7 +92,6 @@ class HidatoSearchProblem(HidatoProblem):
         board = Board(self.width, self.height, neighbor)
 
         return board
-
 
     def get_loss(self, state: Board):
         loss = 0
@@ -114,3 +118,7 @@ class HidatoSearchProblem(HidatoProblem):
             self.moves.pop(-1)
         else:
             raise RuntimeWarning('Tried to undo move with no moves made.')
+
+    def __swap(self, x_1, y_1, x_2, y_2):
+        first, second = self.board[x_1, y_1], self.board[x_2, y_2]
+        self.board[x_1, y_1], self.board[x_2, y_2] = second, first
