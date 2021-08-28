@@ -99,7 +99,7 @@ def benchmark_hill_climbing(width, height, grid, alpha):
 
     for count in max_iterations_values:
         problem = HidatoSearchProblem(width, height, grid)
-        solver.solve(problem, max_iterations=count)
+        solver.solve(problem, max_steps=count)
         loss = problem.get_loss(problem.board)
         absolute_loss = loss * problem.size
         print(f'steps={count}, rel_loss={loss}, abs_loss={absolute_loss}')
