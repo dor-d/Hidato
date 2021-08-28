@@ -1,5 +1,6 @@
 import argparse
 import itertools
+import math
 import sys
 import time
 import random
@@ -91,7 +92,8 @@ def benchmark(width, height, grid):
 
 def benchmark_hill_climbing(width, height, grid, alpha):
     max_error = (1 - alpha) * width * height
-    max_iterations_values = [max_error, max_error * 1.5, max_error * 2, max_error * 2.5]
+    error_multipliers = [1, 1.5, 2, 2.5]
+    max_iterations_values = [math.ceil(max_error * mul) for mul in error_multipliers]
     results = []
     solver = HillClimber()
 
