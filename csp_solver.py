@@ -4,7 +4,6 @@ MINIMUM_REMAINING_VALUES = "MRV"
 LEAST_CONSTRAINING_VALUE = "LCV"
 
 
-
 class CSPSolver:
     def __init__(self, problem):
         self.problem = problem
@@ -20,13 +19,14 @@ class CSPSolver:
             order_values_func = self._least_constraining_value
 
         self._num_of_iterations = 0
-        result = self._recursive_backtracking(select_variable_func, order_values_func, forward_checking)
+        domains = self.problem.get_domains()
+        result = self._recursive_backtracking(domains, select_variable_func, order_values_func, forward_checking)
         if self._num_of_iterations == 0:
             self.problem.display()
             print(select_variable, order_values, forward_checking)
         return result
 
-    def _recursive_backtracking(self, select_variable_func, order_values_func, forward_checking):
+    def _recursive_backtracking(self, domains, select_variable_func, order_values_func, forward_checking):
         if self.problem.is_complete():
             return self.problem
 
@@ -42,7 +42,7 @@ class CSPSolver:
                     self.problem.delete_assignment(variable)
                     continue
 
-            result = self._recursive_backtracking(select_variable_func, order_values_func, forward_checking)
+            result = self._recursive_backtracking(domains, select_variable_func, order_values_func, forward_checking)
             if result is not None:
                 return self.problem
 
@@ -53,17 +53,11 @@ class CSPSolver:
     def _variable_by_order(self):
         return min(var for var in self.problem.get_variables() if not self.problem.board.is_assigned(var))
 
-    def _minimum_remaining_values(self):
-        min_var = None
-        min_value = -1
+    def _minimum_remaining_values(self, domains):
+        def domain_size(var):
+            return len(domains[var])
 
-        for x in self.problem.get_variables():
-            if not self.problem.board.is_assigned(x) and (self.problem.board.is_assigned(x - 1) or self.problem.board.is_assigned(x + 1)):
-                value = len(self.problem.get_constraints(x))
-                if min_var is None or value < min_value:
-                    min_var = x
-                    min_value = value
-        return min_var
+        return sorted(self.problem.get_variables(), key=domain_size)[0]
 
     def _random_values(self, variable):
         values = list(self.problem.get_constraints(variable))

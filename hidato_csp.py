@@ -72,3 +72,11 @@ class HidatoCSP(HidatoProblem):
         return arcs
 
 
+<<<<<<< Updated upstream
+=======
+    def __is_assigned(self, v):
+        return self.board.is_assigned(v)
+
+    def get_domains(self):
+        return self.domains.copy()
+>>>>>>> Stashed changes
