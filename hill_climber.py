@@ -2,6 +2,7 @@ import random
 
 import numpy as np
 from matplotlib import pyplot as plt
+from tqdm import tqdm
 
 from hidato_search_problem import HidatoSearchProblem
 
@@ -25,25 +26,29 @@ class HillClimber:
             max_steps = problem.size * 3
         steps = 0
         problem.init_random_state()
-        while steps <= max_steps:
-            steps += 1
-            current_loss = problem.get_current_loss()
 
-            if current_loss == 0:
-                break
+        with tqdm(total=max_steps) as pbar:
+            while steps <= max_steps:
+                steps += 1
+                current_loss = problem.get_current_loss()
 
-            loss.append(current_loss)
+                if current_loss == 0:
+                    break
 
-            if best_state is None or current_loss < best_loss:
-                best_state, best_loss = problem.get_current_state(), problem.get_current_loss()
+                loss.append(current_loss)
 
-            if expander == RANDOM_CHOICE:
-                found_better_neighbor = problem.get_random_neighbor()
-            elif expander == FIRST_CHOICE:
-                found_better_neighbor = problem.move_to_first_better_neighbor()
+                if best_state is None or current_loss < best_loss:
+                    best_state, best_loss = problem.get_current_state(), problem.get_current_loss()
 
-            if not found_better_neighbor:
-                problem.init_random_state()
+                if expander == RANDOM_CHOICE:
+                    found_better_neighbor = problem.get_random_neighbor()
+                elif expander == FIRST_CHOICE:
+                    found_better_neighbor = problem.move_to_first_better_neighbor()
+
+                if not found_better_neighbor:
+                    problem.init_random_state()
+
+                pbar.update(1)
 
         current_loss = problem.get_current_loss()
         loss.append(current_loss)

@@ -63,7 +63,7 @@ def _solve_hill_climbing(width, height, grid, display=False):
     return problem
 
 
-def benchmark(width, height, grid, alpha):
+def benchmark_csp(width, height, grid, alpha):
     select_variables_options = ["Ordered", "MRV"]
     order_values_options = ["Random", "LCV"]
     forward_checking = [True, False]
@@ -78,7 +78,7 @@ def benchmark(width, height, grid, alpha):
         backtracking_steps = []
         for _ in range(BENCHMARK_ITERATIONS):
             start = time.time()
-            _, num_of_backtracking = _solve_csp(width, height, grid, select_var, order_values, fc, False)
+            _, num_of_backtracking = _solve_csp(width, height, grid.copy(), select_var, order_values, fc, False)
             time_since = _time_since(start)
             running_time.append(time_since)
             backtracking_steps.append(num_of_backtracking)
@@ -93,7 +93,7 @@ def benchmark(width, height, grid, alpha):
 
 def benchmark_hill_climbing(width, height, grid, alpha):
     max_error = alpha * width * height
-    max_steps = max_error * 2
+    max_steps = int(max_error * 2)
     results = []
     solver = HillClimber()
 
@@ -122,7 +122,7 @@ def main():
     grid = generate_hidato(width, height, args.alpha)
 
     if args.benchmark:
-        benchmark(width, height, grid, args.alpha)
+        benchmark_csp(width, height, grid, args.alpha)
         # benchmark_hill_climbing(width, height, grid, args.alpha)
         return
 
