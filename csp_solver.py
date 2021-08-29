@@ -33,8 +33,8 @@ class CSPSolver:
         if self.problem.is_complete():
             return self.problem
 
-        variable = select_variable_func()
-        for value in order_values_func(variable):
+        variable = select_variable_func(domains)
+        for value in order_values_func(variable, domains):
             self._num_of_iterations += 1
 
             self.problem.assign(variable, value)
@@ -53,7 +53,7 @@ class CSPSolver:
 
         return
 
-    def _variable_by_order(self):
+    def _variable_by_order(self, domains):
         return min(var for var in self.problem.get_variables() if not self.problem.board.is_assigned(var))
 
     def _minimum_remaining_values(self, domains):
@@ -62,26 +62,27 @@ class CSPSolver:
 
         return sorted(self.problem.get_variables(), key=domain_size)[0]
 
-    def _random_values(self, variable):
-        values = list(self.problem.get_constraints(variable))
+    @staticmethod
+    def _random_values(variable, domains):
+        values = list(domains[variable])
         random.shuffle(values)
         return values
 
-    def _least_constraining_value(self, variable):
+    def _least_constraining_value(self, variable, domains):
         occurrences = defaultdict(int)
         for x in self.problem.get_unassigned_variables():
-            for val in self.problem.get_constraints(x):
+            for val in domains[x]:
                 occurrences[val] += 1
 
-        return sorted(self.problem.get_constraints(variable), key=lambda a: occurrences[a])
+        return sorted(domains[variable], key=lambda a: occurrences[a])
 
-    def ac3(self, arcs):
+    def ac3(self, arcs, domains):
         queue = arcs.copy()
 
         while queue:
             y, x = queue.pop(0)
 
-            if self.revise(y, x):
+            if self.revise(y, x, domains):
                 if len(self.problem.get_domain(x)) == 0:
                     # inconsistency was found
                     return False
@@ -97,7 +98,7 @@ class CSPSolver:
 
         return True
 
-    def revise(self, a, b):
+    def revise(self, a, b, domains):
         constraint_func = self.problem.get_binary_constraints(a, b)
 
         a_domain = self.problem.get_constraints(a)
