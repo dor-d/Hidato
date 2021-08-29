@@ -1,12 +1,14 @@
 import random
+from collections import defaultdict
+
+from hidato_csp import HidatoCSP
 
 MINIMUM_REMAINING_VALUES = "MRV"
 LEAST_CONSTRAINING_VALUE = "LCV"
 
 
-
 class CSPSolver:
-    def __init__(self, problem):
+    def __init__(self, problem: HidatoCSP):
         self.problem = problem
         self._num_of_iterations = 0
 
@@ -58,7 +60,8 @@ class CSPSolver:
         min_value = -1
 
         for x in self.problem.get_variables():
-            if not self.problem.board.is_assigned(x) and (self.problem.board.is_assigned(x - 1) or self.problem.board.is_assigned(x + 1)):
+            if not self.problem.board.is_assigned(x) and (
+                    self.problem.board.is_assigned(x - 1) or self.problem.board.is_assigned(x + 1)):
                 value = len(self.problem.get_constraints(x))
                 if min_var is None or value < min_value:
                     min_var = x
@@ -70,11 +73,13 @@ class CSPSolver:
         random.shuffle(values)
         return values
 
-    def num_constraints(self, value):
-        return len(self.problem.empty_neighbors(*value))
-
     def _least_constraining_value(self, variable):
-        return sorted(self.problem.get_constraints(variable), key=self.num_constraints, reverse=True)
+        occurrences = defaultdict(int)
+        for x in self.problem.get_unassigned_variables():
+            for val in self.problem.get_constraints(x):
+                occurrences[val] += 1
+
+        return sorted(self.problem.get_constraints(variable), key=lambda a: occurrences[a])
 
     def ac3(self, arcs):
         queue = arcs.copy()
