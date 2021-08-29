@@ -101,8 +101,8 @@ class CSPSolver:
     def revise(self, a, b):
         constraint_func = self.problem.get_binary_constraints(a, b)
 
-        a_domain = self.problem.get_domain(a).copy()
-        b_domain = self.problem.get_domain(b).copy()
+        a_domain = self.problem.get_constraints(a)
+        b_domain = self.problem.get_constraints(b)
 
         revised = False
 
@@ -113,7 +113,6 @@ class CSPSolver:
                     satisfies = True
 
             if not satisfies:
-                self.problem.get_domain(a).remove(a_value)
                 revised = True
 
         return revised
