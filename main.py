@@ -72,11 +72,13 @@ def benchmark_csp(width, height, grid, alpha):
 
     for select_var, order_values, fc in itertools.product(select_variables_options, order_values_options,
                                                           forward_checking):
+        print(f'Benchmark CSP with {select_var}, {order_values}{", fc" if fc else ""}')
         key = f"{select_var} & {order_values} & {fc}"
 
         running_time = []
         backtracking_steps = []
-        for _ in range(BENCHMARK_ITERATIONS):
+        for i in range(BENCHMARK_ITERATIONS):
+            print(f'\titeration {i + 1}/{BENCHMARK_ITERATIONS}')
             start = time.time()
             _, num_of_backtracking = _solve_csp(width, height, grid.copy(), select_var, order_values, fc, False)
             time_since = _time_since(start)
