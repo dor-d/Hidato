@@ -71,12 +71,11 @@ class HidatoCSP(HidatoProblem):
             arcs = [(variable - 1, variable), (variable + 1, variable)]
         return arcs
 
+    def get_unassigned_variables(self):
+        return [v for v in self.get_variables() if not self.__is_assigned(v)]
 
-<<<<<<< Updated upstream
-=======
     def __is_assigned(self, v):
         return self.board.is_assigned(v)
 
     def get_domains(self):
         return self.domains.copy()
->>>>>>> Stashed changes
