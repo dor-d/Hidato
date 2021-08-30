@@ -74,7 +74,7 @@ def benchmark_csp(width, height, grid, alpha):
     for select_var, order_values, fc in itertools.product(select_variables_options, order_values_options,
                                                           forward_checking):
         print(f'Benchmark CSP with {select_var}, {order_values}{", fc" if fc else ""}')
-        key = f"{select_var} & {order_values} & {fc}"
+        key = f"{select_var} & {order_values}{' & AC-3' if fc else ''}"
 
         running_time = []
         backtracking_steps = []
