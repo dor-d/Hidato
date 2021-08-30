@@ -8,18 +8,14 @@ class HidatoCSP(HidatoProblem):
     def __init__(self, width, height, grid):
         super().__init__(width, height, grid)
         self.domains = {}
-        self._update()
+        self.__initialize_domains()
         self.moves = []
 
     def get_variables(self):
         return range(1, self.size + 1)
 
-    def initialize_domain(self):
-        for x in self.get_variables():
-            if self.board.is_assigned(x):
-                self.domains[x] = [self.board._2d_index(x)]
-            else:
-                self.domains[x] = self.board.empty_cells.copy()
+    def __initialize_domains(self):
+        self.domains = {x: self.get_constraints(x) for x in self.get_variables()}
 
     def get_domain(self, x):
         return self.domains[x]
@@ -38,26 +34,27 @@ class HidatoCSP(HidatoProblem):
             return {self.board._2d_index(x)}
 
         elif x == 1 and self.board.is_assigned(2):
-            return self.board._neighbors_of(2) & self.board.empty_cells
+            return self.board.neighbors_of(2) & self.board.empty_cells
 
         elif x == self.size and self.board.is_assigned(x - 1):
-            return self.board._neighbors_of(x - 1) & self.board.empty_cells
+            return self.board.neighbors_of(x - 1) & self.board.empty_cells
 
         else:
-            return (self.board._neighbors_of(x - 1) if self.board.is_assigned(x - 1) else self.board.empty_cells) \
-                   & (self.board._neighbors_of(x + 1) if self.board.is_assigned(x + 1) else self.board.empty_cells) \
+            return (self.board.neighbors_of(x - 1) if self.board.is_assigned(x - 1) else self.board.empty_cells) \
+                   & (self.board.neighbors_of(x + 1) if self.board.is_assigned(x + 1) else self.board.empty_cells) \
                    & self.board.empty_cells
 
     def assign(self, variable, value):
         move = self.board.assign(variable, value)
         self.moves.append(move)
+        self.domains[variable] = {value}
+        self.__update_domains_after_assignment(variable, value)
+        self.__update_consecutive_domains_after_assignment(variable)
 
-    def delete_assignment(self, variable):
+    def delete_assignment(self, variable, old_domains):
         move = self.board.delete_assignment(variable)
         self.moves.append(move)
-
-    def _update(self):
-        self.initialize_domain()
+        self.domains = old_domains
 
     def empty_neighbors(self, x, y):
         return self.board.empty_neighbors(x, y)
@@ -79,3 +76,22 @@ class HidatoCSP(HidatoProblem):
 
     def get_domains(self):
         return self.domains.copy()
+
+    def __update_consecutive_domains_after_assignment(self, variable):
+        neighbors = self.board.neighbors_of(variable)
+        if variable > 1:
+            self.domains[variable - 1] &= neighbors
+        if variable < self.size:
+            self.domains[variable + 1] &= neighbors
+
+    def __update_domains_after_assignment(self, variable, value):
+        self.domains[variable] = {value}
+        self.__update_consecutive_domains_after_assignment(variable)
+        self.__remove_value_from_other_domains(variable, value)
+
+    def __remove_value_from_other_domains(self, variable, value):
+        for other in self.domains.keys():
+            if other != variable and value in self.domains[other]:
+                self.domains[other].remove(value)
+
+
