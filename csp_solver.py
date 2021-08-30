@@ -29,26 +29,22 @@ class CSPSolver:
         return result
 
     def _recursive_backtracking(self, select_variable_func, order_values_func, forward_checking):
-        if self.problem.is_complete():
+        if self.problem.is_correct():
             return self.problem
 
         variable = select_variable_func()
+        if variable is None:
+            return
         for value in order_values_func(variable):
             old_domains = self.problem.get_domains_copy()
             self._num_of_iterations += 1
-
-            print(f'domain of {variable}={self.problem.domains[variable]}')
-            print(f'assigning {value} to {variable}')
             self.problem.assign(variable, value)
 
             if forward_checking:
                 arcs = self.problem.get_arcs(variable)
 
                 if not self.ac3(arcs.copy()):
-                    print(f'after ac-3 domain of {variable}={self.problem.domains[variable]}')
-                    print(f'deleting assignment of {value} to {variable}')
                     self.problem.delete_assignment(variable, old_domains)
-                    print(f'after del domain of {variable}={self.problem.domains[variable]}')
                     continue
 
             result = self._recursive_backtracking(select_variable_func, order_values_func,
@@ -57,13 +53,8 @@ class CSPSolver:
             if result is not None:
                 return self.problem
 
-            print(f'deleting assignment of {value} to {variable}')
             self.problem.delete_assignment(variable, old_domains)
-            print(f'domain of {variable}={self.problem.domains[variable]}')
 
-        print(f'returning with var={variable}')
-        print(f'domain of {variable}={self.problem.domains[variable]}')
-        self.problem.display()
         return
 
     def _variable_by_order(self):
@@ -73,7 +64,9 @@ class CSPSolver:
         def domain_size(var):
             return len(self.problem.domains[var])
 
-        return sorted(self.problem.get_unassigned_variables(), key=domain_size)[0]
+        sorted_variables = sorted(self.problem.get_unassigned_variables(), key=domain_size)
+
+        return sorted_variables[0] if len(sorted_variables) > 0 else None
 
     @staticmethod
     def _random_values(variable, domains):
