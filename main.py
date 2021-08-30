@@ -104,7 +104,7 @@ def benchmark_hill_climbing(width, height, grid, alpha):
         solver.solve(problem, max_steps=max_steps, expander=expander)
         loss = problem.get_loss(problem.board)
         absolute_loss = loss * problem.size
-        print(f'steps={max_steps}, rel_loss={loss}, abs_loss={absolute_loss}')
+        print(f'Expander={expander} steps={max_steps}, rel_loss={loss}, abs_loss={absolute_loss}')
         results.append((max_steps, loss, absolute_loss))
 
     df = pd.DataFrame(results, columns=["max_iterations", "loss", "absolute_loss"])
@@ -158,7 +158,7 @@ def parse_args():
 
 def setup_arg_parser():
     parser = argparse.ArgumentParser(description='Hidato Solver')
-    parser.add_argument('--csp', dest='csp', default=True, action='store_true')
+    parser.add_argument('--csp', dest='csp', action='store_true')
     parser.add_argument('--hill', dest='hill_climbing', action='store_true')
     parser.add_argument('--benchmark', dest='benchmark', action='store_true')
     parser.add_argument('--dim', dest="dimension", default=DEFAULT_DIMENSION, type=int)
