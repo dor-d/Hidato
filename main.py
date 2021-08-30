@@ -124,9 +124,11 @@ def main():
     width = height = args.dimension
     grid = generate_hidato(width, height, args.alpha)
 
-    if args.benchmark:
+    if args.benchmark and args.csp:
         benchmark_csp(width, height, grid, args.alpha)
-        # benchmark_hill_climbing(width, height, grid, args.alpha)
+        return
+    elif args.benchmark and args.hill_climbing:
+        benchmark_hill_climbing(width, height, grid, args.alpha)
         return
 
     print(f'Solving a {width} x {height} Hidato...\n')
