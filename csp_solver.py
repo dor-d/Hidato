@@ -43,7 +43,7 @@ class CSPSolver:
             if forward_checking:
                 arcs = self.problem.get_arcs(variable)
 
-                if not self.ac3(arcs.copy()):
+                if not self.ac3(arcs):
                     self.problem.delete_assignment(variable, old_domains)
                     continue
 
