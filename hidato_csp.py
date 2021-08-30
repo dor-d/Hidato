@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from hidato_problem import HidatoProblem
 from collections import namedtuple
 
@@ -49,7 +51,6 @@ class HidatoCSP(HidatoProblem):
         self.moves.append(move)
         self.domains[variable] = {value}
         self.__update_domains_after_assignment(variable, value)
-        self.__update_consecutive_domains_after_assignment(variable)
 
     def delete_assignment(self, variable, old_domains):
         move = self.board.delete_assignment(variable)
@@ -74,8 +75,13 @@ class HidatoCSP(HidatoProblem):
     def __is_assigned(self, v):
         return self.board.is_assigned(v)
 
-    def get_domains(self):
-        return self.domains.copy()
+    def get_domains_copy(self):
+        return deepcopy(self.domains)
+
+    def __update_domains_after_assignment(self, variable, value):
+        self.domains[variable] = {value}
+        self.__update_consecutive_domains_after_assignment(variable)
+        self.__remove_value_from_other_domains(variable, value)
 
     def __update_consecutive_domains_after_assignment(self, variable):
         neighbors = self.board.neighbors_of(variable)
@@ -83,11 +89,6 @@ class HidatoCSP(HidatoProblem):
             self.domains[variable - 1] &= neighbors
         if variable < self.size:
             self.domains[variable + 1] &= neighbors
-
-    def __update_domains_after_assignment(self, variable, value):
-        self.domains[variable] = {value}
-        self.__update_consecutive_domains_after_assignment(variable)
-        self.__remove_value_from_other_domains(variable, value)
 
     def __remove_value_from_other_domains(self, variable, value):
         for other in self.domains.keys():
