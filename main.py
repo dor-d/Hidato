@@ -1,4 +1,5 @@
 import argparse
+import datetime
 import itertools
 import math
 import sys
@@ -22,7 +23,7 @@ DEFAULT_DIMENSION = 5
 BENCHMARK_ITERATIONS = 10
 MICROSECS_IN_SECS = 1e6
 THE_FUNNY_NUMBER = 42
-CSP_OUTPUT_FILENAME = 'csp_runtimes_{}.csv'
+CSP_OUTPUT_FILENAME = 'csp_runtimes_{}_{}.csv'
 HILL_OUTPUT_FILENAME = "hill_loss.csv"
 
 
@@ -113,7 +114,7 @@ def benchmark_hill_climbing(width, height, grid, alpha):
 
 def export_results_to_csv(results, alpha):
     df = pd.DataFrame(results, columns=["heuristic", "running time", "backtracking_steps"])
-    df.to_csv(CSP_OUTPUT_FILENAME.format(alpha))
+    df.to_csv(CSP_OUTPUT_FILENAME.format(alpha, datetime.datetime.now().__str__()))
 
 
 def main():
