@@ -1,8 +1,6 @@
-import itertools
 import math
 from tkinter import Canvas, Frame, BOTH, TOP, Tk, messagebox
 
-import numpy as np
 from matplotlib import cm
 
 from hidato_problem import HidatoProblem
@@ -13,7 +11,7 @@ import time
 MARGIN = 20  # Pixels around the board
 SIDE = 50  # Width of every board cell.
 START_WAIT_SECONDS = 0
-STEP_WAIT_SECONDS = 0.3
+STEP_WAIT_SECONDS = 0.15
 SHORT_STEP_WAIT_SECONDS = STEP_WAIT_SECONDS / math.pi
 END_WAIT_SECONDS = 15
 NUM_DELETE_MOVES_IN_SWAP = 2
