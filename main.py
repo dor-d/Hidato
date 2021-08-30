@@ -159,7 +159,7 @@ def parse_args():
 
 def setup_arg_parser():
     parser = argparse.ArgumentParser(description='Hidato Solver')
-    parser.add_argument('--csp', dest='csp', default=True, action='store_true')
+    parser.add_argument('--csp', dest='csp', action='store_true')
     parser.add_argument('--hill', dest='hill_climbing', action='store_true')
     parser.add_argument('--benchmark', dest='benchmark', action='store_true')
     parser.add_argument('--dim', dest="dimension", default=DEFAULT_DIMENSION, type=int)
