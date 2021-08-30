@@ -40,7 +40,7 @@ class Board:
     def set(self, x, y, number):
         self.grid[x, y] = number
 
-    def _neighbors_of(self, variable):
+    def neighbors_of(self, variable):
         if not self.is_assigned(variable):
             raise ValueError(f"The variable {variable} is not assigned.")
 
@@ -62,7 +62,7 @@ class Board:
         return 0 <= x < self.height and 0 <= y < self.width
 
     def is_variable_consistent(self, variable):
-        neighbor_indices = self._neighbors_of(variable)
+        neighbor_indices = self.neighbors_of(variable)
         neighbor_numbers = [self.grid[x, y] for x, y in neighbor_indices]
         return variable - 1 in neighbor_numbers or variable + 1 in neighbor_numbers
 
@@ -114,3 +114,4 @@ class Board:
 
     def copy(self):
         return Board(self.width, self.height, self.grid.copy())
+
