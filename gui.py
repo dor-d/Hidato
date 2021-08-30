@@ -1,8 +1,6 @@
-import itertools
 import math
 from tkinter import Canvas, Frame, BOTH, TOP, Tk, messagebox
 
-import numpy as np
 from matplotlib import cm
 
 from hidato_problem import HidatoProblem
@@ -13,7 +11,7 @@ import time
 MARGIN = 20  # Pixels around the board
 SIDE = 50  # Width of every board cell.
 START_WAIT_SECONDS = 0
-STEP_WAIT_SECONDS = 0.3
+STEP_WAIT_SECONDS = 0.15
 SHORT_STEP_WAIT_SECONDS = STEP_WAIT_SECONDS / math.pi
 END_WAIT_SECONDS = 15
 NUM_DELETE_MOVES_IN_SWAP = 2
@@ -206,7 +204,7 @@ class HidatoUI(Frame):
 
     def __flash_cell(self, i, j, color=FLASH_COLOR):
         self.__light_cell(i, j, color)
-        self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
+        self.__update_gui_and_wait(STEP_WAIT_SECONDS)
         self.__refresh_cell_bg_color(i, j)
 
     def __refresh_cell_bg_color(self, i, j):
@@ -253,10 +251,10 @@ class HidatoUI(Frame):
     def __walking_flash_animation(self):
         for i, j in self.__all_coordinates():
             self.__flash_cell(i, j)
-        self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
+        self.__update_gui_and_wait(STEP_WAIT_SECONDS / self.dim)
         for i, j in reversed(self.__all_coordinates()[:-1]):
             self.__flash_cell(i, j)
-        self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
+        self.__update_gui_and_wait(STEP_WAIT_SECONDS / self.dim)
 
     def __even_odd_flashing_animation(self):
         self.__flash_all_even_cells()
@@ -302,16 +300,16 @@ class HidatoUI(Frame):
     def __flash_row_from_left(self, i):
         for j in range(self.dim):
             self.__light_cell(i, j, color=ERROR_COLOR)
-            self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
+            self.__update_gui_and_wait(STEP_WAIT_SECONDS / self.dim)
             self.__light_cell(i, j)
-        self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
+        self.__update_gui_and_wait(STEP_WAIT_SECONDS / self.dim)
 
     def __flash_row_from_right(self, i):
         for j in range(self.dim - 1, -1, -1):
             self.__light_cell(i, j, color=ERROR_COLOR)
-            self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
+            self.__update_gui_and_wait(STEP_WAIT_SECONDS / self.dim)
             self.__light_cell(i, j)
-        self.__update_gui_and_wait(SHORT_STEP_WAIT_SECONDS)
+        self.__update_gui_and_wait(STEP_WAIT_SECONDS / self.dim)
 
     def __ask_show_or_cancel(self):
         return messagebox.askokcancel('Show Solution?', 'Do you want to see the solution steps?')
