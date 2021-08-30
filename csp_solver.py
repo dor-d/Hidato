@@ -68,9 +68,8 @@ class CSPSolver:
 
         return sorted_variables[0] if len(sorted_variables) > 0 else None
 
-    @staticmethod
-    def _random_values(variable, domains):
-        values = list(domains[variable])
+    def _random_values(self, variable):
+        values = list(self.problem.domains[variable])
         random.shuffle(values)
         return values
 
