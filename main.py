@@ -32,33 +32,35 @@ def generate_hidato(width, height, alpha):
     return gen.generate_grid(width, height, alpha)
 
 
-def _solve_csp(width, height, grid, select_variable, order_values, forward_checking, display=False):
+def _solve_csp(width, height, grid, select_variable, order_values, forward_checking, show_gui=False):
     problem = HidatoCSP(width, height, grid)
 
-    if display:
-        problem.display()
+    if show_gui:
         gui = HidatoUI(problem, width)
+    else:
+        problem.display()
 
     solver = CSPSolver(problem)
     solver.solve(select_variable, order_values, forward_checking)
 
-    if display:
+    if show_gui:
         gui.show_solve_steps(problem.moves)
 
     return problem, solver._num_of_iterations
 
 
-def _solve_hill_climbing(width, height, grid, display=False):
+def _solve_hill_climbing(width, height, grid, show_gui=False):
     problem = HidatoSearchProblem(width, height, grid)
 
-    if display:
-        problem.display()
+    if show_gui:
         gui = HidatoUI(problem, width)
+    else:
+        problem.display()
 
     solver = HillClimber()
     solver.solve(problem)
 
-    if display:
+    if show_gui:
         gui.show_solve_steps(problem.moves)
 
     return problem
@@ -137,18 +139,20 @@ def main():
         problem = _solve_hill_climbing(width, height, grid, args.gui)
     elif args.csp:
         problem, _ = _solve_csp(width, height, grid, select_variable="MRV", order_values="LCV", forward_checking=False,
-                                display=args.gui)
+                                show_gui=args.gui)
 
-    print("\nAfter solve:")
-    sys.stdout.flush()
-    problem.display()
-    is_correct = problem.is_correct()
-    print(f"Solution is {'correct' if is_correct else 'incorrect'}.")
-    if not is_correct:
-        loss = problem.get_loss(problem.board)
-        absolute_loss = loss * width * height
-        print(f"There are {absolute_loss} errors.")
-        print(f"The loss is {loss}.")
+    if not args.gui:
+        print("\nAfter solve:")
+        sys.stdout.flush()
+        problem.display()
+
+        is_correct = problem.is_correct()
+        print(f"Solution is {'correct' if is_correct else 'incorrect'}.")
+        if not is_correct:
+            loss = problem.get_loss(problem.board)
+            absolute_loss = loss * width * height
+            print(f"There are {absolute_loss} errors.")
+            print(f"The loss is {loss}.")
 
 
 def parse_args():
