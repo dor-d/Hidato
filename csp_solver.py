@@ -34,21 +34,21 @@ class CSPSolver:
 
         variable = select_variable_func()
         for value in order_values_func(variable):
-            old_domains = self.problem.domains.copy()
+            old_domains = self.problem.get_domains_copy()
             self._num_of_iterations += 1
 
+            print(f'domain of {variable}={self.problem.domains[variable]}')
             print(f'assigning {value} to {variable}')
-            # old_domain = domains[variable]
-            self.problem.assign(variable, value)  # update consecutive on new_domain
-
-            # if not self.problem.board.is_variable_consistent(variable):
-            #     return
+            self.problem.assign(variable, value)
 
             if forward_checking:
                 arcs = self.problem.get_arcs(variable)
 
                 if not self.ac3(arcs.copy()):
+                    print(f'after ac-3 domain of {variable}={self.problem.domains[variable]}')
+                    print(f'deleting assignment of {value} to {variable}')
                     self.problem.delete_assignment(variable, old_domains)
+                    print(f'after del domain of {variable}={self.problem.domains[variable]}')
                     continue
 
             result = self._recursive_backtracking(select_variable_func, order_values_func,
@@ -59,7 +59,10 @@ class CSPSolver:
 
             print(f'deleting assignment of {value} to {variable}')
             self.problem.delete_assignment(variable, old_domains)
+            print(f'domain of {variable}={self.problem.domains[variable]}')
+
         print(f'returning with var={variable}')
+        print(f'domain of {variable}={self.problem.domains[variable]}')
         self.problem.display()
         return
 
