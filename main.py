@@ -1,7 +1,6 @@
 import argparse
 import datetime
 import itertools
-import math
 import sys
 import time
 import random
