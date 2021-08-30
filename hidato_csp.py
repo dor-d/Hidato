@@ -49,7 +49,6 @@ class HidatoCSP(HidatoProblem):
     def assign(self, variable, value):
         move = self.board.assign(variable, value)
         self.moves.append(move)
-        self.domains[variable] = {value}
         self.__update_domains_after_assignment(variable, value)
 
     def delete_assignment(self, variable, old_domains):
@@ -94,5 +93,3 @@ class HidatoCSP(HidatoProblem):
         for other in self.domains.keys():
             if other != variable and value in self.domains[other]:
                 self.domains[other].remove(value)
-
-
