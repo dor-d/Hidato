@@ -23,9 +23,6 @@ class CSPSolver:
 
         self._num_of_iterations = 0
         result = self._recursive_backtracking(select_variable_func, order_values_func, forward_checking)
-        if self._num_of_iterations == 0:
-            self.problem.display()
-            print(select_variable, order_values, forward_checking)
         return result
 
     def _recursive_backtracking(self, select_variable_func, order_values_func, forward_checking):
